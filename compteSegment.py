@@ -51,7 +51,7 @@ patternTest2 = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 ]
-listPattern = [patternTest2]
+listPattern = [patternTest, patternTest2]
 
 # taille de l'image en pixel
 size_picture = 17
@@ -93,13 +93,14 @@ def doExercice():
         init_list_pixel_form = []
 
         pixelStart = findStartFigure(pattern)
+
         if pixelStart != None:
             count_line = 1
 
         listPixelForme = trouverPlusLongChemin(pixelStart, pattern, init_list_pixel_form, pixelStart, pixelStart)
-        print(listPixelForme)
-        listPixelSegment.append(pixelStart)
+        listPixelForme.append(pixelStart)
 
+        print(listPixelForme)
         for pixel_current in listPixelForme:
 
             if testLine(pixelStart, pixel_current, pattern, listPixelSegment):
@@ -118,46 +119,24 @@ def doExercice():
 
 def trouverPlusLongChemin(pixelCurent, pattern, cheminCourant, pixelStart, insertPixel):
 
+    cheminCourant = cheminCourant + [insertPixel]
     plusLongChemin = cheminCourant
     pixelsSuivant = trouverPixelSuivant(pixelCurent, pattern, cheminCourant)
-    pixelVersPlusLongChemin = None
-    chemintmp = []
-    plusLongChemin.append(insertPixel)
-    print("HELLO")
-    print("pixelsSuivant")
-    print(pixelsSuivant)
+
 
     for pixel in pixelsSuivant:
         chemintmp = cheminCourant
 
-        print("pixels in cheminCourant")
-        print(cheminCourant)
-        print("pixel")
-        print(pixel)
-
-        print("   ")
-
-        if chemintmp != None and pixel != pixelStart and pixel not in cheminCourant:
+        if pixel not in cheminCourant:
 
             nouveauChemin = trouverPlusLongChemin(pixel, pattern, chemintmp, pixelStart, pixel)
-            print("nouveauChemin")
-            print(nouveauChemin)
 
             if nouveauChemin != None:
+
+
                 if len(nouveauChemin) > len(plusLongChemin):
                     plusLongChemin = nouveauChemin
-                    pixelVersPlusLongChemin = pixel
 
-    print("end FOR")
-
-     #   else:
-    #        return plusLongChemin
-
-
-  #  if chemintmp != None and pixelVersPlusLongChemin != None:
-     #   return plusLongChemin.append(pixelVersPlusLongChemin)
-
-   # else:
     return plusLongChemin
 
 
