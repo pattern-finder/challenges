@@ -1,8 +1,14 @@
 ### Ajouté par l'API avant l'envoie à judge0
 
 import cv2 as cv
-import matplotlib
 import numpy
+
+##ALGO:
+#Etape 1: trouver le sommet de la forme
+#Etape 2: trouver et sauvegarder le plus long chemin de pixel sans passer 2 fois par le même pixel (a l'exception du premier pixel qui est le dernier)
+#Etape 3: Parcourir le chemin de pixel en appliquant l'algo de trace de ligne et déterminer quel pixel appartient à quel ligne
+#Etape 4: Dès qu'un pixel n'appartient plus à la ligne, on change le point de départ de la ligne et on incrémente le compteur de ligne
+#
 
 
 
@@ -10,17 +16,17 @@ patternTest = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
     [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
     [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
     [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -35,17 +41,16 @@ patternTest2 = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 ]
-
 listPattern = [patternTest2]
 
 # taille de l'image en pixel
@@ -78,210 +83,122 @@ def assertRes(solution_user, resultat):
 
 
 
-
-
-
-
 def doExercice():
+
+
     for pattern in listPattern:
+        count_line = 0
 
-        listPixels = []
-        count = 0
+        listPixelSegment = []
+        init_list_pixel_form = []
+
         pixelStart = findStartFigure(pattern)
-        pixelStartLine = pixelStart
-       # listPixels.append(pixelStart)
+        if pixelStart != None:
+            count_line = 1
+
+        listPixelForme = trouverPlusLongChemin(pixelStart, pattern, init_list_pixel_form, pixelStart, pixelStart)
+        print(listPixelForme)
+        listPixelSegment.append(pixelStart)
+
+        for pixel_current in listPixelForme:
+
+            if testLine(pixelStart, pixel_current, pattern, listPixelSegment):
+                listPixelSegment.append(pixel_current)
+
+            else:
+                count_line = count_line + 1
+                pixelStart = pixel_current
+                listPixelSegment = []
+                listPixelSegment.append(pixelStart)
+
+        print(count_line)
+
+    return count_line
+
+
+def trouverPlusLongChemin(pixelCurent, pattern, cheminCourant, pixelStart, insertPixel):
+
+    plusLongChemin = cheminCourant
+    pixelsSuivant = trouverPixelSuivant(pixelCurent, pattern, cheminCourant)
+    pixelVersPlusLongChemin = None
+    chemintmp = []
+    plusLongChemin.append(insertPixel)
+    print("HELLO")
+    print("pixelsSuivant")
+    print(pixelsSuivant)
+
+    for pixel in pixelsSuivant:
+        chemintmp = cheminCourant
+
+        print("pixels in cheminCourant")
+        print(cheminCourant)
+        print("pixel")
+        print(pixel)
+
+        print("   ")
+
+        if chemintmp != None and pixel != pixelStart and pixel not in cheminCourant:
+
+            nouveauChemin = trouverPlusLongChemin(pixel, pattern, chemintmp, pixelStart, pixel)
+            print("nouveauChemin")
+            print(nouveauChemin)
+
+            if nouveauChemin != None:
+                if len(nouveauChemin) > len(plusLongChemin):
+                    plusLongChemin = nouveauChemin
+                    pixelVersPlusLongChemin = pixel
+
+    print("end FOR")
+
+     #   else:
+    #        return plusLongChemin
+
+
+  #  if chemintmp != None and pixelVersPlusLongChemin != None:
+     #   return plusLongChemin.append(pixelVersPlusLongChemin)
+
+   # else:
+    return plusLongChemin
 
 
 
-
-        #pixelStartLine = pixelStart
-        #newPixel = findNext(pattern, pixelStart, (-1,-1), listPixels, pixelStart)
-
-       # currentpixel = newPixel
-
-      #  listPixels.append(currentpixel)
-        #testLine(pixelStartLine[0], pixelStartLine[1], currentpixel[0], currentpixel[1], pattern, listPixels)
-
-        stop = False
-        while not stop:
-
-            currentpixel = pixelStart
-
-            l1 = []
-            l2 = []
-            l1.append(currentpixel)
-            l2.append(currentpixel)
-
-            newPixels = findNextPixel(currentpixel, pattern, listPixels, pixelStartLine, l1, l2)
-            print(len(newPixels))
-            print("test "+ str(newPixels))
-
-            currentpixel = newPixels[len(newPixels)-1]
-
-
-            print("newPixel " + str(currentpixel))
-
-
-
-            print("countFLAG")
-            count = count +1
-            pixelStartLine = currentpixel
-
-            for pixel in newPixels:
-                listPixels.append(pixel)
-
-            if pixelStart[0] == currentpixel[0] and pixelStart[1] == currentpixel[1]:
-                stop = True
-                print("stop")
-                print(pixelStart)
-                print(currentpixel)
-
-                count = count +1
-
-
-    print("count")
-
-    print(count)
-    return count
-
-def findNext(pattern, pixel, lastPixel,listPixels, pixelStart):
-
-    x = pixel[0]
-    y = pixel[1]
+def trouverPixelSuivant(pixelStart, pattern, cheminCourant):
+    x = pixelStart[0]
+    y = pixelStart[1]
 
     lisPotentielPixelNext = []
 
-    if pattern[y][x + 1] == 1 and ((x + 1, y) not in listPixels or (x + 1, y) == pixelStart and len(listPixels) > 2):
+    if pattern[y][x + 1] == 1 and (x + 1, y) not in cheminCourant:
         lisPotentielPixelNext.append((x + 1, y))
 
-    if pattern[y + 1][x] == 1 and ((x, y + 1) not in listPixels or (x, y + 1) == pixelStart and len(listPixels) > 2):
+    if pattern[y + 1][x] == 1 and (x, y + 1) not in cheminCourant:
         lisPotentielPixelNext.append((x, y + 1))
 
-    if pattern[y][x - 1] == 1 and ((x - 1, y) not in listPixels or (x - 1, y) == pixelStart and len(listPixels) > 2):
+    if pattern[y][x - 1] == 1 and (x - 1, y) not in cheminCourant:
         lisPotentielPixelNext.append((x - 1, y))
 
-    if pattern[y - 1][x] == 1 and ((x, y - 1) not in listPixels or (x, y - 1) == pixelStart and len(listPixels) > 2):
+    if pattern[y - 1][x] == 1 and (x, y - 1) not in cheminCourant:
         lisPotentielPixelNext.append((x, y - 1))
 
-    if pattern[y + 1][x + 1] == 1 and (
-            (x + 1, y + 1) not in listPixels or (x + 1, y + 1) == pixelStart and len(listPixels) > 2):
+    if pattern[y + 1][x + 1] == 1 and (x + 1, y + 1) not in cheminCourant:
         lisPotentielPixelNext.append((x + 1, y + 1))
 
-    if pattern[y - 1][x - 1] == 1 and (
-            (x - 1, y - 1) not in listPixels or (x - 1, y - 1) == pixelStart and len(listPixels) > 2):
+    if pattern[y - 1][x - 1] == 1 and (x - 1, y - 1) not in cheminCourant:
         lisPotentielPixelNext.append((x - 1, y - 1))
 
-    if pattern[y + 1][x - 1] == 1 and (
-            (x - 1, y + 1) not in listPixels or (x - 1, y + 1) == pixelStart and len(listPixels) > 2):
+    if pattern[y + 1][x - 1] == 1 and (x - 1, y + 1) not in cheminCourant:
         lisPotentielPixelNext.append((x - 1, y + 1))
 
-    if pattern[y - 1][x + 1] == 1 and (
-            (x + 1, y - 1) not in listPixels or (x + 1, y - 1) == pixelStart and len(listPixels) > 2):
+    if pattern[y - 1][x + 1] == 1 and (x + 1, y - 1) not in cheminCourant:
         lisPotentielPixelNext.append((x + 1, y - 1))
 
 
-    for pixel in lisPotentielPixelNext:
-        if testLine(pixelStart[0], pixelStart[1], pixel[0], pixel[1], pattern, listPixels):
-            return (pixel[0], pixel[1])
-
-
-    return lisPotentielPixelNext[0]
-
-
-
-def findNextPixel(pixel, pattern, listPixels, pixelStart, currentListPixel, resListPixel):
-    lisPotentielPixelNext = []
-    x = pixel[0]
-    y = pixel[1]
-
-
-
-    if pattern[y][x + 1] == 1 and ((x + 1, y) not in currentListPixel or (x + 1, y) == pixelStart and len(currentListPixel) > 2):
-        lisPotentielPixelNext.append((x + 1, y))
-
-    if pattern[y + 1][x] == 1 and ((x, y + 1) not in currentListPixel or (x, y + 1) == pixelStart and len(currentListPixel) > 2):
-        lisPotentielPixelNext.append((x, y + 1))
-
-    if pattern[y][x - 1] == 1 and ((x - 1, y) not in currentListPixel or (x - 1, y) == pixelStart and len(currentListPixel) > 2):
-        lisPotentielPixelNext.append((x - 1, y))
-
-    if pattern[y - 1][x] == 1 and ((x, y - 1) not in currentListPixel or (x, y - 1) == pixelStart and len(currentListPixel) > 2):
-        lisPotentielPixelNext.append((x, y - 1))
-
-    if pattern[y + 1][x + 1] == 1 and (
-            (x + 1, y + 1) not in currentListPixel or (x + 1, y + 1) == pixelStart and len(currentListPixel) > 2):
-        lisPotentielPixelNext.append((x + 1, y + 1))
-
-    if pattern[y - 1][x - 1] == 1 and (
-            (x - 1, y - 1) not in currentListPixel or (x - 1, y - 1) == pixelStart and len(currentListPixel) > 2):
-        lisPotentielPixelNext.append((x - 1, y - 1))
-
-    if pattern[y + 1][x - 1] == 1 and (
-            (x - 1, y + 1) not in currentListPixel or (x - 1, y + 1) == pixelStart and len(currentListPixel) > 2):
-        lisPotentielPixelNext.append((x - 1, y + 1))
-
-    if pattern[y - 1][x + 1] == 1 and (
-            (x + 1, y - 1) not in currentListPixel or (x + 1, y - 1) == pixelStart and len(currentListPixel) > 2):
-        lisPotentielPixelNext.append((x + 1, y - 1))
-
-
-    resListPixelMax = []
-
-    print("lisPotentielPixelNext " + str(lisPotentielPixelNext))
-    #print("resListPixelMax " + str(resListPixelMax))
-
-    for pixel in lisPotentielPixelNext:
-
-       # print("x1" + str(pixel[0]))
-       # print("x2" + str(pixel[1]))
-
-        if testLine(pixelStart[0], pixelStart[1], pixel[0], pixel[1], pattern, listPixels) and pixel not in currentListPixel:
-            print("testLine")
-            print("pixel" + str(pixel))
-            print("ligne" + str(lisPotentielPixelNext))
-
-            currentListPixel.append(pixel)
-            resListPixel = findNextPixel(pixel, pattern, listPixels, pixelStart, currentListPixel, resListPixel)
-
-            if len(resListPixelMax) < len(currentListPixel):
-                resListPixelMax = currentListPixel
-
-
-
-    return resListPixelMax
+    return lisPotentielPixelNext
 
 
 
 
 
-  #  switcher = {
-    #    pattern[y][x+1] == 1 and ((x+1,y) not in listPixels or (x+1,y) == pixelStart and len(listPixels) > 2) : (x+1, y),
-     #   pattern[y+1][x] == 1 and ((x,y+1) not in listPixels or (x,y+1) == pixelStart and len(listPixels) > 2): (x, y+1),
-    #    pattern[y][x - 1] == 1 and ((x-1,y) not in listPixels or (x-1,y) == pixelStart and len(listPixels) > 2): (x - 1, y),
-    #    pattern[y - 1][x] == 1 and ((x,y-1) not in listPixels or (x,y-1) == pixelStart and len(listPixels) > 2): (x, y - 1),
-   # }
-
-
-
-
-   # if switcher.get(True) == None:
-    #    switcher = {
-    #        pattern[y + 1][x + 1] == 1 and ((x+1,y+1) not in listPixels or (x+1,y+1) == pixelStart and len(listPixels) > 2): (x + 1, y + 1),
-     #       pattern[y - 1][x - 1] == 1 and ((x-1,y-1) not in listPixels or (x-1,y-1) == pixelStart and len(listPixels) > 2): (x - 1, y - 1),
-     #       pattern[y + 1][x - 1] == 1 and ((x-1,y+1) not in listPixels or (x-1,y+1) == pixelStart and len(listPixels) > 2): (x - 1, y + 1),
-    #        pattern[y - 1][x + 1] == 1 and ((x+1,y-1) not in listPixels or (x+1,y-1) == pixelStart and len(listPixels) > 2): (x + 1, y - 1),
-       # }
-
-  #  res = switcher.get(True)
-  #  if res == (pixelStart[0], pixelStart[1]):
-     #   return res
-    #print("res")
-    #print(switcher.get(True))
-
-    #if pixelStart[0] == x and pixelStart[1] == y and len(listPixels)>1:
-       # return (pixelStart[0],pixelStart[1])
-
-   # return switcher.get(True)
 
 
 
@@ -313,12 +230,15 @@ def findStartFigure(pattern):
 
 
 
-def testLine(x1, y1, x2, y2, pattern, listPixels):
+def testLine(pixelStart, currentPixel, pattern, listPixels):
+    x1 = pixelStart[0]
+    y1 = pixelStart[1]
+
+    x2 = currentPixel[0]
+    y2 = currentPixel[1]
+
     isLine = True
-   # print("x1 " + str(x1))
-   # print("x2 " + str(x2))
-    #print("y1 " + str(y1))
-  ##  print("y2 " + str(y2))
+
     dx = x2 - x1
     if dx != 0:
         if dx > 0:
