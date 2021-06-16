@@ -96,7 +96,31 @@ patternTest4 = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 ]
 
-listPattern = [patternTest4]
+
+
+patternTest5 = [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0],
+    [0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+]
+
+
+
+listPattern = [patternTest5]
 
 # taille de l'image en pixel
 size_picture = 17
@@ -133,64 +157,82 @@ def doExercice():
 
     for pattern in listPattern:
         count_line = 0
-
+        list_form = []
         listPixelSegment = []
         init_list_pixel_form = []
         listSegmentFormParcourtDroit = []
 
+        currentLigne = 0
+        currentColonne = 0
+        pixelParcourtBalayageCurrent = (currentColonne,currentLigne)
+        pixelParcourtBalayageEnd = (size_picture-1,size_picture-1)
+        stop = False
+
+        while pixelParcourtBalayageCurrent != pixelParcourtBalayageEnd and not stop:
+
+            pixelFormNotExplore = False
+            pixelStart = findStartFigure(pattern,pixelParcourtBalayageCurrent, list_form)
+            pixelParcourtBalayageCurrent = pixelStart
+       #     print(pixelParcourtBalayageCurrent)
+            print(pixelStart)
+
+            if pixelStart != pixelParcourtBalayageEnd:
 
 
-        pixelStart = findStartFigure(pattern)
-        pixelInit = pixelStart
+
+                pixelInit = pixelStart
 
 
-        if pixelStart != None:
-            count_line = 0
+                if pixelStart != None:
+                    count_line = 0
 
-        listPixelPolygon = trouverPlusLongChemin(pixelStart, pattern, init_list_pixel_form, pixelStart, pixelStart)
-        listPixelPolygon.append(pixelStart)
-        print(listPixelPolygon)
+                listPixelPolygon = trouverPlusLongChemin(pixelStart, pattern, init_list_pixel_form, pixelStart, pixelStart)
 
-        for pixel_current in listPixelPolygon:
+                for pixel_current in listPixelPolygon:
 
-            if testLine(pixelStart, pixel_current, pattern, listPixelSegment):
-                listPixelSegment.append(pixel_current)
+                    if testLine(pixelStart, pixel_current, pattern, listPixelSegment):
+                        listPixelSegment.append(pixel_current)
 
-            else:
+                    else:
+
+                        count_line = count_line + 1
+                        pixelStart = pixel_current
+                        listSegmentFormParcourtDroit.append(listPixelSegment)
+                        initPixel = listPixelSegment[len(listPixelSegment)-1]
+                        listPixelSegment = []
+                        listPixelSegment.append(initPixel)
+                        listPixelSegment.append(pixelStart)
+
+
+
+
 
                 count_line = count_line + 1
-                pixelStart = pixel_current
+                listPixelSegment.append(pixelInit)
                 listSegmentFormParcourtDroit.append(listPixelSegment)
-                initPixel = listPixelSegment[len(listPixelSegment)-1]
-                listPixelSegment = []
-                listPixelSegment.append(initPixel)
-                listPixelSegment.append(pixelStart)
+                print(listSegmentFormParcourtDroit)
+                list_form.append(listSegmentFormParcourtDroit)
+                listSegmentFormParcourtDroit = []
+                listPixelSegment=[]
+             #   print("Segment")
+            #    print(listSegmentFormParcourtDroit)
+               # print(count_line)
+                id = 1
 
+                for first_segment in listSegmentFormParcourtDroit:
 
+                    second_segment = listSegmentFormParcourtDroit[id]
 
+                    angle = calculAngle(first_segment[0], first_segment[len(first_segment)-1], second_segment[len(second_segment)-1])
 
+                 #   print(angle)
 
-        count_line = count_line + 1
-        listPixelSegment.append(pixelInit)
-        listSegmentFormParcourtDroit.append(listPixelSegment)
+                    id = id+1
+                    if id > (len(listSegmentFormParcourtDroit)-1):
+                        id = 0
 
-        print("Segment")
-        print(listSegmentFormParcourtDroit)
-        print(count_line)
-        id = 1
-
-        for first_segment in listSegmentFormParcourtDroit:
-
-            second_segment = listSegmentFormParcourtDroit[id]
-
-            angle = calculAngle(first_segment[0], first_segment[len(first_segment)-1], second_segment[len(second_segment)-1])
-
-            print(angle)
-
-            id = id+1
-            if id > (len(listSegmentFormParcourtDroit)-1):
-                id = 0
-
+            else:
+                stop = True
 
 
 
@@ -221,15 +263,15 @@ def calculAngle(pixelBegin, pixelMiddle, pixelEnd):
     dx2 = (pixelEnd[0]- pixelMiddle[0])
     dy2 = (pixelEnd[1]- pixelMiddle[1])
 
-    print(pixelBegin)
-    print(pixelMiddle)
-    print(pixelEnd)
+  #  print(pixelBegin)
+  #  print(pixelMiddle)
+  #  print(pixelEnd)
 
-    print(dx1)
-    print(dy1)
+  #  print(dx1)
+   # print(dy1)
 
-    print(dx2)
-    print(dy2)
+ #   print(dx2)
+#    print(dy2)
 
     produitScalaire = calculProduitScalaire(dx1, dy1, dx2, dy2)
     normeP1 = calculNorme(dx1, dy1)
@@ -237,13 +279,13 @@ def calculAngle(pixelBegin, pixelMiddle, pixelEnd):
 
     cos_angle = round(produitScalaire / (normeP1*normeP2),3)
 
-    print("cos_angle " + str(cos_angle))
-    print("produitScalaire " + str(produitScalaire))
-    print("normeP1 " + str(normeP1))
-    print("normeP2 " + str(normeP2))
+   # print("cos_angle " + str(cos_angle))
+ #   print("produitScalaire " + str(produitScalaire))
+   # print("normeP1 " + str(normeP1))
+   # print("normeP2 " + str(normeP2))
 
     radiant = math.acos(cos_angle)
-    print("cos_angle " + str(radiant))
+   # print("cos_angle " + str(radiant))
 
     angle_degree = math.degrees(radiant)
 
@@ -353,16 +395,34 @@ def marquePixel(listPixels, pattern, currentpixel):
 
 
 
-def findStartFigure(pattern):
+def findStartFigure(pattern, pixelstart, list_form):
 
-    ligne = 0
-    colonne = 0
+    ligne = pixelstart[1]
+    colonne = pixelstart[0]
 
+
+
+    pixelStart = None
     while ligne < size_picture:
         while colonne < size_picture:
 
             if pixelAllumeInit(pattern,colonne, ligne):
-                return (colonne, ligne)
+                pixelStart = (colonne, ligne)
+                pixelFormNotExplore = True
+
+                for form in list_form:
+                    for segment in form:
+                        if pixelStart in segment:
+                            pixelFormNotExplore = False
+
+
+
+                if pixelFormNotExplore:
+                    return pixelStart
+
+
+
+
 
             colonne = colonne +1
 
@@ -370,6 +430,7 @@ def findStartFigure(pattern):
         ligne = ligne +1
 
 
+    return (size_picture-1, size_picture-1)
 
 def testLine(pixelStart, currentPixel, pattern, listPixels):
     x1 = pixelStart[0]
