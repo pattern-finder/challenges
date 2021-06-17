@@ -16,12 +16,8 @@ option5 = cv.imread("./pattern/comparaisonMatrice/option5.png")
 
 
 
-
-
-listPatternInit = [option1, option2, option3, option4,option5 ]
 resultat = 1
 
-size_matrice = 23
 
 def initExercice():
     newListPattern=[]
@@ -30,7 +26,6 @@ def initExercice():
         newMatrice = Matrice(size_matrice)
         newMatrice.initContent(pattern)
         newListPattern.append(newMatrice)
-
 
     return newListPattern
 
@@ -54,6 +49,9 @@ def assertRes(solution_user ,resultat):
     else:
         return "ERROR"
 
+###Donnée à l'utilisateur
+listPatternInit = [option1, option2, option3, option4,option5 ]
+size_matrice = 23
 
 ### FIN Ajouté par l'API avant l'envoie à judge0
 
@@ -65,7 +63,7 @@ def assertRes(solution_user ,resultat):
 #Donnée: Image a trouver => matrice_result
 #        Liste d'images a traiter => listMatrice
 
-#Réponse: vous devez retourner l'id de limage dans la liste (0, 1, 2 ...)
+#Réponse: vous devez retourner l'id de limage dans la liste (0, 1, 2 ...) correspondant à l'image d'entrée
 
 
 ### Algo crée par l'utilisateur
@@ -103,9 +101,7 @@ def doExercice(listMatrice, matriceInputToFind):
 
 def compatrePixel(x, y, matriceSource, matriceCible):
 
-    return matriceSource.getPixel(x, y).compare(matriceCible.getPixel(x, y)) and\
-           matriceSource.getPixel(x, y).compare(matriceCible.getPixel(x, y)) and \
-           matriceSource.getPixel(x, y).compare(matriceCible.getPixel(x, y))
+    return matriceSource.getPixel(x, y).compare(matriceCible.getPixel(x, y))
 
 
 ### FIN  Algo crée par l'utilisateur

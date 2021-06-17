@@ -24,6 +24,7 @@ class Matrice:
 
         matrice_content = []
 
+
         y = 0
         while y < self.getSize():
 
@@ -39,6 +40,8 @@ class Matrice:
                 pixel = Pixel(x, y, color)
                 ligne.append(pixel)
                 x +=1
+
+
             matrice_content.append(ligne)
             y+=1
 

@@ -3,8 +3,7 @@
 
 import cv2 as cv
 
-
-
+from bibliothequePython.bib import Matrice, Pixel
 
 option1 = cv.imread("./pattern/comparaisonCarre/option1.png")
 option2 = cv.imread("./pattern/comparaisonCarre/option2.png")
@@ -12,24 +11,39 @@ option3 = cv.imread("./pattern/comparaisonCarre/option3.png")
 option4 = cv.imread("./pattern/comparaisonCarre/option4.png")
 
 
+listPatternInit = [option1, option2, option3, option4]
+size_matrice = 23
 
 
-listPattern = [option1, option2, option3, option4]
+def initExercice():
+    newListPattern=[]
 
+    for pattern in listPatternInit:
+        newMatrice = Matrice(size_matrice)
+        newMatrice.initContent(pattern)
+        newListPattern.append(newMatrice)
 
+    return newListPattern
 
 # taille de l'image en pixel
-size_picture = 23
 
 # position de départ de la figure
-start_X = (size_picture/2)-1
-start_Y = (size_picture/2)-1
+start_X = (size_matrice/2)-1
+start_Y = (size_matrice/2)-1
 
 resultat = 1
 
 
+
+
+
+
+
 def testAlgo():
-    solution_user = doExercice(listPattern)
+
+    listMatrice = initExercice()
+
+    solution_user = doExercice(listMatrice)
 
     return assertRes(solution_user, resultat)
 
@@ -42,6 +56,16 @@ def assertRes(solution_user, resultat):
 
 
 ### FIN Ajouté par l'API avant l'envoie à judge0
+
+
+#Consigne: Vous disposez d'une liste d'image.
+#Implémentez la fonction doExercice afin de créer un algoritme capable de trouver le pattern de carrée
+#
+#
+#Donnée: Liste d'images a traiter => listMatrice
+#        le centre de la figure
+#Réponse: vous devez retourner l'id de limage dans la liste (0, 1, 2 ...) correspondant à un carré
+
 
 
 ### Algo crée par l'utilisateur
@@ -62,7 +86,7 @@ def doExercice(listPattern):
             posX = posX - 1
             posY = posY - 1
 
-            if pixelIsUp(posX, posY, pattern):
+            if compatrePixel(posX, posY, pattern):
 
                 taille_forme = tailleCarre(decalage)+1
 
@@ -88,22 +112,24 @@ def doExercice(listPattern):
 
 
 
-### FIN  Algo crée par l'utilisateur
-
 def tailleCarre(hauteur):
     return 2 * hauteur + 1
 
 
-def pixelIsUp(x, y, matriceSource):
-    return matriceSource[y][x][0] == 0 and matriceSource[y][x][1] == 0 and matriceSource[y][x][2] == 0
+
+def compatrePixel(x, y, matriceSource):
+
+    pixelNone = Pixel(x, x, (255, 255, 255))
+
+    return not matriceSource.getPixel(x, y).compare(pixelNone)
 
 
 def parcourtPatternX(posX, posY, endX, pattern):
 
     if posX == endX:
-        return pixelIsUp(posX ,posY, pattern)
+        return compatrePixel(posX ,posY, pattern)
     else:
-        if pixelIsUp(posX ,posY, pattern):
+        if compatrePixel(posX ,posY, pattern):
 
             return parcourtPatternX(posX + 1, posY, endX, pattern)
         else:
@@ -114,15 +140,16 @@ def parcourtPatternY(posX, posY, endY, pattern):
 
     if posY == endY:
 
-        return pixelIsUp(posX ,posY, pattern)
+        return compatrePixel(posX ,posY, pattern)
     else:
-        if pixelIsUp(posX, posY, pattern):
+        if compatrePixel(posX, posY, pattern):
             return parcourtPatternY(posX, posY + 1, endY, pattern)
         else:
 
             return False
 
 
+### FIN  Algo crée par l'utilisateur
 
 
 if __name__ == '__main__':

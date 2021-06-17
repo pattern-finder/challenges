@@ -92,6 +92,7 @@ def remplissageDiffusion(listPattern):
             print(ligne)
     return 0
 
+
 def remplissageBalayage(listPattern):
 
     for pattern in listPattern:
@@ -107,25 +108,22 @@ def remplissageBalayage(listPattern):
 
         ligne = 0
         colonne = 0
-        isOnFigure = False
 
         while ligne < SIZE_SCREEN-1:
             savePixelInFormLigne = []
+            isInForm = False
 
             while colonne < SIZE_SCREEN-1:
 
                 if pattern[colonne][ligne] == 1:
                     isInForm = not isInForm
-                    isOnFigure = True
+                    print((colonne, ligne))
+
+                if isInForm:
+                    savePixelInFormLigne.append((colonne, ligne))
 
                 else:
-                    isOnFigure = False
-
-                if isInForm and not isOnFigure:
-                    savePixelInFormLigne.append((ligne,colonne))
-
-                else:
-                    print(savePixelInFormLigne)
+                    #print(savePixelInFormLigne)
 
                     for pixel in savePixelInFormLigne:
                         savePixelInFormMatrice.append(pixel)
@@ -137,11 +135,10 @@ def remplissageBalayage(listPattern):
             colonne = 0
             ligne = ligne + 1
 
-
+        print(savePixelInFormMatrice)
         for pixel in savePixelInFormMatrice:
             x = pixel[0]
             y = pixel[1]
-
             pattern[y][x] = 1
 
         for ligne in pattern:
