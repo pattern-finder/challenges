@@ -1,10 +1,11 @@
 
 ### Ajouté par l'API avant l'envoie à judge0
 
+from bibliothequePython import bib
+
 import cv2 as cv
 
-
-
+from bibliothequePython.bib import Matrice
 
 result = cv.imread("./pattern/comparaisonMatrice/result.png")
 option1 = cv.imread("./pattern/comparaisonMatrice/option1.png")
@@ -16,12 +17,33 @@ option5 = cv.imread("./pattern/comparaisonMatrice/option5.png")
 
 
 
-listPattern = [option1, option2, option3, option4,option5 ]
+
+listPatternInit = [option1, option2, option3, option4,option5 ]
 resultat = 1
+
+size_matrice = 23
+
+def initExercice():
+    newListPattern=[]
+
+    for pattern in listPatternInit:
+        newMatrice = Matrice(size_matrice)
+        newMatrice.initContent(pattern)
+        newListPattern.append(newMatrice)
+
+
+    return newListPattern
+
+
 
 
 def testAlgo():
-    solution_user = doExercice(listPattern, result)
+
+    listMatrice = initExercice()
+    matrice_result = Matrice(size_matrice)
+    matrice_result.initContent(result)
+
+    solution_user = doExercice(listMatrice, matrice_result)
 
     return assertRes(solution_user ,resultat)
 
@@ -36,25 +58,35 @@ def assertRes(solution_user ,resultat):
 ### FIN Ajouté par l'API avant l'envoie à judge0
 
 
+#Consigne: Vous disposez d'une image résultat et d'une liste d'image.
+#Implémentez la fonction doExercice afin de créer un algoritme capable de trouver l'image d'entrée dans la liste d'image de sortie
+#
+#
+#Donnée: Image a trouver => matrice_result
+#        Liste d'images a traiter => listMatrice
 
+#Réponse: vous devez retourner l'id de limage dans la liste (0, 1, 2 ...)
 
 
 ### Algo crée par l'utilisateur
 
-def doExercice(listPattern, matriceInputToFind):
+def doExercice(listMatrice, matriceInputToFind):
     currentId = 0
     solutionId = -1
 
-    for pattern in listPattern:
+    for matrice in listMatrice:
         ligneInputPattern = 0
 
         equal = True
+        print("")
+        matrice.toStringPixel()
 
-        for lignePixel in pattern:
+        for lignePixel in matrice.getMatriceContent():
             colonneInputPattern = 0
+
             for pixel in lignePixel:
 
-                if not compatrePixel(colonneInputPattern, ligneInputPattern, pattern, matriceInputToFind):
+                if not compatrePixel(colonneInputPattern, ligneInputPattern, matrice, matriceInputToFind):
                     equal = False
 
                 colonneInputPattern = colonneInputPattern +1
@@ -69,12 +101,16 @@ def doExercice(listPattern, matriceInputToFind):
     return solutionId
 
 
+def compatrePixel(x, y, matriceSource, matriceCible):
+
+    return matriceSource.getPixel(x, y).compare(matriceCible.getPixel(x, y)) and\
+           matriceSource.getPixel(x, y).compare(matriceCible.getPixel(x, y)) and \
+           matriceSource.getPixel(x, y).compare(matriceCible.getPixel(x, y))
+
+
 ### FIN  Algo crée par l'utilisateur
 
 
-def compatrePixel(x, y, matriceSource, matriceCible):
-
-    return matriceSource[y][x][0] == matriceCible[y][x][0] and matriceSource[y][x][1] == matriceCible[y][x][1] and matriceSource[y][x][2] == matriceCible[y][x][2]
 
 
 if __name__ == '__main__':
