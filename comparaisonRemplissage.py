@@ -51,7 +51,13 @@ def assertRes(solution_user, resultat):
 
 ### FIN Ajouté par l'API avant l'envoie à judge0
 
-###Donnée à l'utilisateur
+#Consigne: Vous disposez d'une liste d'image.
+#Implémentez la fonction doExercice afin de créer un algoritme capable de trouver le pattern remplie (dont tous les pixels intèriueurs sont noir)
+#
+#
+#Donnée: Liste d'images a traiter => listMatrice
+
+#Réponse: vous devez retourner l'id de limage dans la liste (0, 1, 2 ...) correspondant à une forme pleine
 
 
 ### Algo crée par l'utilisateur
