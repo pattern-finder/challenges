@@ -109,9 +109,13 @@ def doExercice():
             else:
                 count_line = count_line + 1
                 pixelStart = pixel_current
+                initPixel = listPixelSegment[len(listPixelSegment)-1]
                 listPixelSegment = []
+                listPixelSegment.append(initPixel)
+
                 listPixelSegment.append(pixelStart)
 
+        print(count_line)
         print(count_line)
 
     return count_line

@@ -3,67 +3,41 @@
 
 import cv2 as cv
 
+from bibliothequePython.bib import Matrice, Pixel
+
+option1 = cv.imread("pattern/comparaisonRemplissage/option1.png")
+option2 = cv.imread("pattern/comparaisonRemplissage/option2.png")
+option3 = cv.imread("pattern/comparaisonRemplissage/option3.png")
 
 
 
-option1 = [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-]
 
-option2 = [
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0],
-    [0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0],
-    [0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0],
-    [0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0],
-    [0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0],
-    [0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0],
-    [0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0],
-    [0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0],
-    [0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0],
-    [0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0],
-    [0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0],
-    [0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0],
-    [0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-
-]
-
-
-listPattern = [option1, option2]
-
-
+listPatternInit = [option1, option2, option3]
+resultat = 2
 
 # taille de l'image en pixel
-size_picture = 17
+size_matrice = 23
 
-# position de départ de la figure
-start_X = 8
-start_Y = 8
 
-resultat = 1
+
+
+
+def initExercice():
+    newListPattern=[]
+
+    for pattern in listPatternInit:
+        newMatrice = Matrice(size_matrice)
+        newMatrice.initContent(pattern)
+        newListPattern.append(newMatrice)
+
+    return newListPattern
+
 
 
 def testAlgo():
-    solution_user = remplissageBalayage(listPattern)
+    listMatrice = initExercice()
+
+    solution_user = remplissageBalayage(listMatrice)
 
     return assertRes(solution_user, resultat)
 
@@ -78,87 +52,118 @@ def assertRes(solution_user, resultat):
 ### FIN Ajouté par l'API avant l'envoie à judge0
 
 ###Donnée à l'utilisateur
-SIZE_SCREEN = 17
 
 
 ### Algo crée par l'utilisateur
 
 def remplissageDiffusion(listPattern):
+    idSolution = -1
 
     for pattern in listPattern:
-        decalePixel(start_X, start_Y, pattern)
+        pattern.toStringPixel()
+        listPixelContent = []
+        res = decalePixel(start_X, start_Y, pattern, listPixelContent)
+        if res:
+            return idSolution
+        idSolution +=1
 
-        for ligne in pattern:
-            print(ligne)
-    return 0
+    return -1
 
 
 def remplissageBalayage(listPattern):
+    idSolution = 0
 
     for pattern in listPattern:
-        isInForm = False
-        savePixelInFormMatrice = []
-
-        print("")
-
-        for ligne in pattern:
-            print(ligne)
-
-        print("")
 
         ligne = 0
         colonne = 0
+        echec = False
 
-        while ligne < SIZE_SCREEN-1:
-            savePixelInFormLigne = []
-            isInForm = False
+        while ligne < size_matrice-1 and not echec:
 
-            while colonne < SIZE_SCREEN-1:
+            cpt_bordure = 0
+            inForm = False
 
-                if pattern[colonne][ligne] == 1:
-                    isInForm = not isInForm
-                    print((colonne, ligne))
+            while colonne < size_matrice-1 and not echec:
 
-                if isInForm:
-                    savePixelInFormLigne.append((colonne, ligne))
+                if cpt_bordure > 2 and cpt_bordure != 0:
+                    echec = True
+
+
+                if pixelIsNotNull(colonne, ligne, pattern):
+
+
+                    if not inForm:
+                        print("PIXEL enter IN")
+                        print(colonne)
+                        print(ligne)
+
+                        inForm = True
+                        cpt_bordure += 1
 
                 else:
-                    #print(savePixelInFormLigne)
 
-                    for pixel in savePixelInFormLigne:
-                        savePixelInFormMatrice.append(pixel)
+                    if inForm:
+                        print("PIXEL enter OUT")
+                        print(colonne)
+                        print(ligne)
 
-                    savePixelInFormLigne = []
+                        inForm = False
+                        cpt_bordure += 1
+
+
 
                 colonne = colonne + 1
 
             colonne = 0
             ligne = ligne + 1
 
-        print(savePixelInFormMatrice)
-        for pixel in savePixelInFormMatrice:
-            x = pixel[0]
-            y = pixel[1]
-            pattern[y][x] = 1
 
-        for ligne in pattern:
-            print(ligne)
 
+        print("idSolution" + str(idSolution))
+        print(cpt_bordure)
+
+        if not echec:
+            return idSolution
+
+
+        idSolution +=1
 
 
     return 0
 
 
-def decalePixel(x, y, pattern):
-    if pattern[x][y] == 0:
-        pattern[x][y] = 1
+def decalePixel(x, y, pattern, listPixelForme):
 
-        decalePixel(x+1,y,pattern)
-        decalePixel(x,y+1,pattern)
-        decalePixel(x-1,y,pattern)
-        decalePixel(x,y-1,pattern)
+        if x <= size_matrice-1 and y<= size_matrice-1:
+
+            if (x, y) not in listPixelForme :
+
+                if pixelIsNotNull(x,y,pattern):
 
 
+                    listPixelForme.append((x, y))
+
+                    return decalePixel(x+1,y,pattern, listPixelForme) and \
+                    decalePixel(x,y+1,pattern, listPixelForme) and \
+                    decalePixel(x-1,y,pattern, listPixelForme) and \
+                    decalePixel(x,y-1,pattern, listPixelForme)
+
+                else:
+                    return False
+
+            else:
+                return True
+
+        else :
+            return False
+
+
+def pixelIsNotNull(x, y, matriceSource):
+
+    pixelNone = Pixel(x, x, (255, 255, 255))
+
+    return not matriceSource.getPixel(x, y).compare(pixelNone)
 
 
 

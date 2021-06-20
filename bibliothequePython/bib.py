@@ -13,7 +13,7 @@ class Matrice:
 
     def getPixel(self, x, y):
 
-        return self.matrice_content[x][y]
+        return self.matrice_content[y][x]
 
 
     def getMatriceContent(self):
@@ -114,6 +114,7 @@ class Pixel:
 
 
     def compare(self, pixel):
+
         return self.getColorRed() == pixel.getColorRed() and self.getColorGreen() == pixel.getColorGreen() and self.getColorBlue() == pixel.getColorBlue()
 
 

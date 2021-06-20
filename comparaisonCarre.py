@@ -12,7 +12,7 @@ option4 = cv.imread("./pattern/comparaisonCarre/option4.png")
 
 
 listPatternInit = [option1, option2, option3, option4]
-size_matrice = 23
+resultat = 1
 
 
 def initExercice():
@@ -25,14 +25,11 @@ def initExercice():
 
     return newListPattern
 
-# taille de l'image en pixel
 
-# position de départ de la figure
+###Donnée à l'utilisateur
+size_matrice = 23
 start_X = (size_matrice/2)-1
 start_Y = (size_matrice/2)-1
-
-resultat = 1
-
 
 
 

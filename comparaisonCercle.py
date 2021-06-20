@@ -1,145 +1,41 @@
 ### Ajouté par l'API avant l'envoie à judge0
 
 import cv2 as cv
-import matplotlib
 import numpy
 
-matrice = cv.imread("./pattern/exo3/repCercle.png")
+from bibliothequePython.bib import Matrice, Pixel
 
-class Pixel:
-    def __init__(self, red, green, blue):
-        self.red = red
-        self.green = green
-        self.blue = blue
-
-    def comparePixelColor(self, other):
-        if isinstance(other, self.__class__):
-            return self.red == other.red and \
-                   self.green == other.green and \
-                   self.blue == other.blue
-        else:
-            return False
-
-
-concepte = "cercle"
-
-matriceInputPattern2 = [[0,0,0,0,0,1,1,1,0,0,0,0,0],
-                        [0,0,1,0,0,0,0,0,0,0,0,0,0],
-                        [0,1,0,0,0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0,0,0,0,1],
-                        [1,0,0,0,0,0,0,0,0,0,0,0,1],
-                        [0,0,0,0,0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0,0,0,0,1],
-                        [1,0,0,0,0,0,0,0,0,0,0,0,0],
-                        [0,1,0,0,0,0,0,0,0,0,0,1,0],
-                        [0,0,1,0,0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,1,0,0,0,0],
-
-
-                        ]
-
-matriceInputPattern1 = [[0,0,0,1,1,1,1,1,1,1,0,0,0],
-                        [0,0,1,0,0,0,0,0,0,0,1,0,0],
-                        [0,1,0,0,0,0,0,0,0,0,0,1,0],
-                        [1,0,0,0,0,0,0,0,0,0,0,0,1],
-                        [1,0,0,0,0,0,0,0,0,0,0,0,1],
-                        [1,0,0,0,0,0,0,0,0,0,0,0,1],
-                        [1,0,0,0,0,0,0,0,0,0,0,0,1],
-                        [1,0,0,0,0,0,0,0,0,0,0,0,1],
-                        [1,0,0,0,0,0,0,0,0,0,0,0,1],
-                        [1,0,0,0,0,0,0,0,0,0,0,0,1],
-                        [0,1,0,0,0,0,0,0,0,0,0,1,0],
-                        [0,0,1,0,0,0,0,0,0,0,1,0,0],
-                        [0,0,0,1,1,1,1,1,1,1,0,0,0],
-
-
-                        ]
-matriceInputPattern3 = [[0,0,0,0,0,0,0,0,0,0,0,0,0],
-                        [0,0,1,0,0,0,0,0,0,0,0,0,0],
-                        [0,1,0,0,0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0,0,0,0,1],
-                        [1,0,0,0,0,0,0,0,0,0,0,0,1],
-                        [0,0,0,0,0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0,0,0,0,1],
-                        [1,0,0,0,0,0,0,0,0,0,0,0,0],
-                        [0,1,0,0,0,0,0,0,0,0,0,1,0],
-                        [0,0,1,0,0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,1,0,0,0,0],
-
-
-                        ]
-
-
-matricetest2 = [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-
-]
-
-patternTest =           [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                         ]
-
-
-listPattern2 = [matriceInputPattern1, matriceInputPattern2, matriceInputPattern3]
-listPattern = [matrice]
-
-# taille de l'image en pixel
-size_picture = 24
-
-# position de départ de la figure
-start_X = 12
-start_Y = 12
+option1 = cv.imread("./pattern/comparaisonCercle/option1.png")
+option2 = cv.imread("./pattern/comparaisonCercle/option2.png")
+option3 = cv.imread("./pattern/comparaisonCercle/option3.png")
+option4 = cv.imread("./pattern/comparaisonCercle/option4.png")
 
 
 
-resultat = 0
+
+listPatternInit = [option1, option2, option3, option4]
+resultat = 3
+
+#donnée à l'utilisateur
+size_matrice = 23
+start_X = 11
+start_Y = 11
+
+def initExercice():
+    newListPattern=[]
+
+    for pattern in listPatternInit:
+        newMatrice = Matrice(size_matrice)
+        newMatrice.initContent(pattern)
+        newListPattern.append(newMatrice)
+
+    return newListPattern
 
 
 def testAlgo():
-    solution_user = doExercice(12.0,listPattern[0])
+    listMatrice = initExercice()
+
+    solution_user = doExercice(listMatrice)
 
     return assertRes(solution_user, resultat)
 
@@ -154,187 +50,83 @@ def assertRes(solution_user, resultat):
 ### FIN Ajouté par l'API avant l'envoie à judge0
 
 
+
+#Consigne: Vous disposez d'une liste d'image.
+#Implémentez la fonction doExercice afin de créer un algoritme capable de trouver le pattern de cercle
+#l'algorithme a utiliser est l'algorithme de tracé de cercle de bresenham
+#
+#Donnée: Liste d'images a traiter => listMatrice
+#        le centre de la figure
+#Réponse: vous devez retourner l'id de limage dans la liste (0, 1, 2 ...) correspondant à un cercle de bresenham
+
+
+
 ### Algo crée par l'utilisateur
-def doExercice(r,pattern):
-    x = 0
-    y = int(r)
-    d = 5 - 4.0*r
-    pixelAllume(pattern,x + start_X, y + start_Y)
-    pixelAllume(pattern, start_X-x, start_Y-y)
-    pixelAllume(pattern,x + start_X, start_Y-y)
-    pixelAllume(pattern, start_X-x, y + start_Y)
+def doExercice(listPattern):
 
-    while (y > x):
-
-        if  d > 0:
-            y = y-1
-            d = d - 8.0*y
-
-        x = x + 1
-        d = d + 8.0 * x + 4.0
-        pixelAllume(pattern, x + start_X, y + start_Y)
-        pixelAllume(pattern, y + start_X, x + start_Y);
-        pixelAllume(pattern, -x + start_X, y + start_Y);
-        pixelAllume(pattern, -y + start_X, x + start_Y);
-        pixelAllume(pattern, x + start_X, -y + start_Y);
-        pixelAllume(pattern, y + start_X, -x + start_Y);
-        pixelAllume(pattern, -x + start_X, -y + start_Y);
-        pixelAllume(pattern, -y + start_X, -x + start_Y);
-
-    for ligne in patternTest:
-        print(ligne)
-
-
-
-
-
-
-
-def doExercice2(listPattern):
-    solutionId = -1
-    id = 0
-    equal = False
-
-
-    printMatrice(matrice)
+    solutionId = 0
 
     for pattern in listPattern:
-        print("CHANGE PATTERN")
-        posX = start_X
-        posY = start_Y
-        rayonPotentiel = 0
-        test = True
-        while posX >= 0 and posY < 23 and test:
+        r = 0
+
+        pattern.toStringPixel()
+        while r <= 11:
+
+            x = 0
+            y = int(r)
+            d = 5 - 4.0*r
+
+            res = pixelIsNull(x + start_X, y + start_Y, pattern) and \
+            pixelIsNull(y + start_X, x + start_Y, pattern) and \
+            pixelIsNull(-x + start_X, y + start_Y, pattern) and \
+            pixelIsNull(-y + start_X, x + start_Y, pattern) and \
+            pixelIsNull(x + start_X, -y + start_Y, pattern) and \
+            pixelIsNull(y + start_X, -x + start_Y, pattern) and \
+            pixelIsNull(-x + start_X, -y + start_Y, pattern) and \
+            pixelIsNull(-y + start_X, -x + start_Y, pattern)
+
+            print("res init")
+            print(res)
+
+
+            while (y > x):
+
+                if  d > 0:
+                    y = y-1
+                    d = d - 8.0*y
+
+                x = x + 1
+                d = d + 8.0 * x + 4.0
+                res = res and pixelIsNull(x + start_X, y + start_Y, pattern) and \
+                pixelIsNull(y + start_X, x + start_Y, pattern) and \
+                pixelIsNull(-x + start_X, y + start_Y, pattern) and \
+                pixelIsNull(-y + start_X, x + start_Y, pattern) and \
+                pixelIsNull(x + start_X, -y + start_Y, pattern) and \
+                pixelIsNull(y + start_X, -x + start_Y, pattern) and \
+                pixelIsNull(-x + start_X, -y + start_Y, pattern) and \
+                pixelIsNull(-y + start_X, -x + start_Y, pattern)
+                print("res clac")
+                print(res)
+                print(r)
+
+            r +=1
+
+        if res == True:
+            return solutionId
+
+        solutionId += 1
 
 
 
-            if not pixelAllume(pattern,posX, posY) and not equal:
-                print("DEFINE")
-                posY = posY + 1
-                rayonPotentiel = rayonPotentiel + 1
+def pixelIsNull(x, y, matriceSource):
 
-            else:
+    pixelNone = Pixel(x, x, (255, 255, 255))
+    print("PIXEL")
 
-                test = False
+    print(matriceSource.getPixel(x, y).getX())
+    print(matriceSource.getPixel(x, y).getY())
 
-                print("START")
-                x = 0
-                y = rayonPotentiel
-
-                d = 1-rayonPotentiel
-                print('Rayon'+str(rayonPotentiel))
-
-                cpt=0
-                macthPixelCircle = True
-                while y > x:
-                    print("cpt : "+ str(cpt))
-
-                    macthPixelCircle = macthPixelCircle
-                    pixelAllume(pattern, x + start_X, y + start_Y)
-                    pixelAllume(pattern, y+start_X, x+start_Y ) ;
-                    pixelAllume(pattern, -x+start_X, y+start_Y ) ;
-                    pixelAllume(pattern, -y+start_X, x+start_Y ) ;
-                    pixelAllume(pattern, x+start_X, -y+start_Y ) ;
-                    pixelAllume(pattern, y+start_X, -x+start_Y ) ;
-                    pixelAllume(pattern, -x+start_X, -y+start_Y ) ;
-                    pixelAllume(pattern, -y+start_X, -x+start_Y ) ;
-                    cpt = cpt+1
-
-                    if d >= 0:
-                        d += 2*(x - y)+5
-                        y = y-1
-                    else:
-                        d += 2 * x + 3
-
-
-                    x +=1
-
-                    print(d)
-                    for ligne in patternTest:
-                        print(ligne)
-
-
-                posY = posY + 1
-                if macthPixelCircle :
-                    print("RESOK")
-
-                    solutionId = id
-                    equal = True
-
-
-        id = id + 1
-
-
-
-    return solutionId
-
-
-def tailleCarre(hauteur):
-    return 2 * hauteur + 1
-
-def valabs(yStart,yEnd):
-    if yEnd-yStart >= 0:
-        return yEnd-yStart
-    else :
-        return yStart-yEnd
-
-def printMatrice(matrice):
-
-    for line in matrice:
-        print(getLine(line, 0))
-
-
-def getLine(line, pos):
-
-    if pos < len(line):
-        return str(line[pos]) + getLine(line, pos+1)
-
-    else:
-        return ""
-
-
-
-def compareRayon(x,y,R):
-    return x*x+y*y-R*R
-
-    return 2 * hauteur + 1
-
-
-def pixelAllume(matrice, x, y):
-
-   # print("MATCH")
-  #  print(x)
-  #  print(y)
-
-    patternTest[y][x] = 1
-   # pixel = matrice[y][x]
-  #  print("PIXEL")
- #   print(pixel)
- #   print(pixel[0])
-
- #   return pixel[0] == 0 and pixel[1] == 0 and pixel[2] == 0
-
-
-
-def parcourtPatternX(posX, posY, endX, pattern):
-
-    if posX == endX:
-        return pixelAllume(pattern[posX][posY])
-    else:
-        return parcourtPatternX(posX + 1, posY, endX, pattern) and pixelAllume(pattern[posX][posY])
-
-
-def parcourtPatternY(posX, posY, endY, pattern):
-
-    if posY == endY:
-        return pixelAllume(pattern[posX][posY])
-    else:
-        return parcourtPatternY(posX, posY + 1, endY, pattern) and pixelAllume(pattern[posX][posY])
-
-
-
-
-
+    return not matriceSource.getPixel(x, y).compare(pixelNone)
 
 
 
