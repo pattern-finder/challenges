@@ -3,178 +3,146 @@
 import cv2 as cv
 import numpy
 import math
+from scipy import misc
 
-##ALGO:
-#Etape 1: trouver le sommet de la forme
-#Etape 2: trouver et sauvegarder le plus long chemin de pixel sans passer 2 fois par le même pixel (a l'exception du premier pixel qui est le dernier)
-#Etape 3: Parcourir le chemin de pixel en appliquant l'algo de trace de ligne et déterminer quel pixel appartient à quel ligne
-#Etape 4: Dès qu'un pixel n'appartient plus à la ligne, on change le point de départ de la ligne et on incrémente le compteur de ligne
-#
 
+from bibliothequePython.bib import Matrice, Pixel
+
+option2 = cv.imread("pattern/dataForm/option5.png")
 
 
 
+listPatternInit = [option2]
+sizePattern = 116
 
+resultat_valide = {
+    "carré": 2,
+    "rectangle": 3,
+    "autre parallèlogramme": 1,
 
-patternTest = [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-]
+    "triangle rectangle": 2,
+    "triangle équilatéral": 0,
+    "triangle isocèle": 2,
+    "triangle quelconque": 1,
 
-patternTest2 = [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-    [0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-]
-
-patternTest3 = [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-]
-
-patternTest4 = [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0],
-    [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-]
-
-
-
-patternTest5 = [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0],
-    [0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-]
-
-
-
-listPattern = [patternTest5]
-
-# taille de l'image en pixel
-size_picture = 17
+    "polygone à 5 coté": 1,
+    "polygone à 6 coté": 0,
+    "polygone à 7 coté": 2,
+}
 
 
 
 
 
-resultat = 4
+listPatternSize = [sizePattern]
+
+
+
+
+
+
+def initExercice():
+    newListPattern=[]
+
+    for pattern in listPatternInit:
+      #  print(pattern)
+        newMatrice = Matrice(sizePattern)
+        newMatrice.initContent(pattern)
+        newListPattern.append(newMatrice)
+
+    return newListPattern
 
 
 def testAlgo():
-    solution_user = doExercice()
+    listMatrice = initExercice()
+    solution_user = doExercice(listMatrice)
 
-    return assertRes(solution_user, resultat)
+    return assertRes()
 
 
-def assertRes(solution_user, resultat):
-    if solution_user == resultat:
+def assertRes():
+    if resultat_valide == dict_resultat:
         return "SUCCESS"
     else:
         return "ERROR"
 
 
+dict_resultat = {
+    "carré": 0,
+    "rectangle": 0,
+    "autre parallèlogramme": 0,
+
+    "triangle rectangle": 0,
+    "triangle équilatéral": 0,
+    "triangle isocèle": 0,
+    "triangle quelconque": 0,
+
+    "polygone à 5 coté": 0,
+    "polygone à 6 coté": 0,
+    "polygone à 7 coté": 0,
+}
+
+
 ### FIN Ajouté par l'API avant l'envoie à judge0
+
+
+#Consigne: Vous disposez d'une image contenant plusieurs formes.
+#Implémentez la fonction doExercice afin de créer un algoritme capable de déterminer si une forme est un :
+#carré
+#rectangle
+#autre parallèlogramme
+#triangle rectangle
+#triangle équilatéral
+#triangle isocèle
+#triangle quelconque
+#polygone à 5 coté
+#polygone à 6 coté
+#polygone à 7 coté
+
+
+#
+#Donnée: l'image contenant les fromes, la taille de l'image et un dictionnaire python à remplire à renvoyer
+
+#Réponse: vous devez retourner le dictionnaire contenant le nom des formes en clé et leur nombre en valeur
+
+
+
+
+
+
+
 
 
 ### Algo crée par l'utilisateur
 
 
 
-def doExercice():
+def doExercice(listPattern):
 
+
+    id=0
 
     for pattern in listPattern:
+        size_picture = listPatternSize[id]
         count_line = 0
         list_form = []
+
         listPixelSegment = []
+
         init_list_pixel_form = []
         listSegmentFormParcourtDroit = []
 
         currentLigne = 0
         currentColonne = 0
         pixelParcourtBalayageCurrent = (currentColonne,currentLigne)
+
         pixelParcourtBalayageEnd = (size_picture-1,size_picture-1)
         stop = False
 
         while pixelParcourtBalayageCurrent != pixelParcourtBalayageEnd and not stop:
 
-            pixelFormNotExplore = False
-            pixelStart = findStartFigure(pattern,pixelParcourtBalayageCurrent, list_form)
+            pixelStart = findStartFigure(pattern,pixelParcourtBalayageCurrent, list_form, size_picture)
             pixelParcourtBalayageCurrent = pixelStart
-       #     print(pixelParcourtBalayageCurrent)
-            print(pixelStart)
 
             if pixelStart != pixelParcourtBalayageEnd:
 
@@ -187,10 +155,20 @@ def doExercice():
                     count_line = 0
 
                 listPixelPolygon = trouverPlusLongChemin(pixelStart, pattern, init_list_pixel_form, pixelStart, pixelStart)
+                listPixelPolygonReverse = []
+
+                x = 1
+                for pixel in listPixelPolygon:
+
+                    listPixelPolygonReverse.append(listPixelPolygon[len(listPixelPolygon)-x])
+                    x += 1
+
+
+
 
                 for pixel_current in listPixelPolygon:
 
-                    if testLine(pixelStart, pixel_current, pattern, listPixelSegment):
+                    if testLine(pixelStart[0], pixelStart[1], pixel_current[0], pixel_current[1], pattern):
                         listPixelSegment.append(pixel_current)
 
                     else:
@@ -204,47 +182,108 @@ def doExercice():
                         listPixelSegment.append(pixelStart)
 
 
-
-
-
                 count_line = count_line + 1
                 listPixelSegment.append(pixelInit)
                 listSegmentFormParcourtDroit.append(listPixelSegment)
-                print(listSegmentFormParcourtDroit)
                 list_form.append(listSegmentFormParcourtDroit)
-                listSegmentFormParcourtDroit = []
                 listPixelSegment=[]
-             #   print("Segment")
-            #    print(listSegmentFormParcourtDroit)
-               # print(count_line)
-                id = 1
 
+
+
+
+                listeSegment=listSegmentFormParcourtDroit
+                listAngleForme = []
+
+
+                id = 1
                 for first_segment in listSegmentFormParcourtDroit:
 
                     second_segment = listSegmentFormParcourtDroit[id]
 
                     angle = calculAngle(first_segment[0], first_segment[len(first_segment)-1], second_segment[len(second_segment)-1])
-
-                 #   print(angle)
+                    listAngleForme.append(angle)
 
                     id = id+1
                     if id > (len(listSegmentFormParcourtDroit)-1):
                         id = 0
 
+
+                detect_forme(listeSegment, listAngleForme)
+                listSegmentFormParcourtDroit = []
+
             else:
                 stop = True
 
-
-
+    id +=1
+    print(dict_resultat)
 
     return count_line
 
+
+def detect_forme(listeSegment, listeAngle):
+
+    if len(listeSegment) == 3:
+        angle1 = listeAngle[0]
+        angle2 = listeAngle[1]
+        angle3 = listeAngle[2]
+
+        if angle1 != angle2 and angle1 != angle3 and angle2 != angle3:
+            dict_resultat["triangle quelconque"] += 1
+
+        elif angle1 == angle2 == angle3:
+            dict_resultat["triangle équilatéral"] += 1
+
+        elif angle1 == angle2 or angle1 == angle3 or angle2 == angle3:
+            dict_resultat["triangle isocèle"] += 1
+
+        if angle1 == 90 or angle2 == 90 or angle3 == 90:
+            dict_resultat["triangle rectangle"] += 1
+
+
+    elif  len(listeSegment) == 4:
+        angle1 = listeAngle[0]
+        angle2 = listeAngle[1]
+        angle3 = listeAngle[2]
+        angle4 = listeAngle[3]
+
+        segment1 = listeSegment[0]
+        segment2 = listeSegment[1]
+        segment3 = listeSegment[2]
+        segment4 = listeSegment[3]
+
+        if angle1 == 90 and angle2 == 90 and angle3 == 90 and angle4 ==90:
+
+            if len(segment1) == len(segment2) == len(segment3) == len(segment4):
+                dict_resultat["carré"] += 1
+            else:
+                dict_resultat["rectangle"] += 1
+
+        else:
+            dict_resultat["autre parallèlogramme"] += 1
+
+
+    elif len(listeSegment) == 5:
+        dict_resultat["polygone à 5 coté"] += 1
+
+    elif  len(listeSegment) == 6:
+
+        for segment in listeSegment:
+            print(segment)
+
+        print("")
+        print("")
+        print("")
+        print("")
+
+        dict_resultat["polygone à 6 coté"] += 1
+
+    elif len(listeSegment) == 7:
+        dict_resultat["polygone à 7 coté"] += 1
 
 def calculNorme(dx, dy):
     return numpy.sqrt(dx * dx + dy * dy)
 
 def calculProduitScalaire(dx1, dy1, dx2, dy2):
-    #return 1/2 * (abs(calculNorme(dx1+dx2, dy1+dy2)*calculNorme(dx1+dx2, dy1+dy2)) - calculNorme(dx1, dy1)*calculNorme(dx1, dy1) - calculNorme(dx2, dy2)*calculNorme(dx2, dy2))
     return dx1*dx2 + dy1*dy2
 
 def valAbs(a, b):
@@ -263,15 +302,6 @@ def calculAngle(pixelBegin, pixelMiddle, pixelEnd):
     dx2 = (pixelEnd[0]- pixelMiddle[0])
     dy2 = (pixelEnd[1]- pixelMiddle[1])
 
-  #  print(pixelBegin)
-  #  print(pixelMiddle)
-  #  print(pixelEnd)
-
-  #  print(dx1)
-   # print(dy1)
-
- #   print(dx2)
-#    print(dy2)
 
     produitScalaire = calculProduitScalaire(dx1, dy1, dx2, dy2)
     normeP1 = calculNorme(dx1, dy1)
@@ -279,17 +309,11 @@ def calculAngle(pixelBegin, pixelMiddle, pixelEnd):
 
     cos_angle = round(produitScalaire / (normeP1*normeP2),3)
 
-   # print("cos_angle " + str(cos_angle))
- #   print("produitScalaire " + str(produitScalaire))
-   # print("normeP1 " + str(normeP1))
-   # print("normeP2 " + str(normeP2))
-
     radiant = math.acos(cos_angle)
-   # print("cos_angle " + str(radiant))
 
     angle_degree = math.degrees(radiant)
 
-    return round(angle_degree, 3)
+    return round(angle_degree, 1)
 
 
 
@@ -318,63 +342,39 @@ def trouverPlusLongChemin(pixelCurent, pattern, cheminCourant, pixelStart, inser
 
 
 
+
+
+
 def trouverPixelSuivant(pixelStart, pattern, cheminCourant):
     x = pixelStart[0]
     y = pixelStart[1]
 
     lisPotentielPixelNext = []
 
-    if pattern[y][x + 1] == 1 and (x + 1, y) not in cheminCourant:
+    if pixelIsNull(x+1, y, pattern) and (x + 1, y) not in cheminCourant:
         lisPotentielPixelNext.append((x + 1, y))
 
-    if pattern[y + 1][x] == 1 and (x, y + 1) not in cheminCourant:
+    if pixelIsNull(x, y+1, pattern) and (x, y + 1) not in cheminCourant:
         lisPotentielPixelNext.append((x, y + 1))
 
-    if pattern[y][x - 1] == 1 and (x - 1, y) not in cheminCourant:
+    if pixelIsNull(x-1, y, pattern) and (x - 1, y) not in cheminCourant:
         lisPotentielPixelNext.append((x - 1, y))
 
-    if pattern[y - 1][x] == 1 and (x, y - 1) not in cheminCourant:
+    if pixelIsNull(x, y-1, pattern) and (x, y - 1) not in cheminCourant:
         lisPotentielPixelNext.append((x, y - 1))
 
-    if pattern[y + 1][x + 1] == 1 and (x + 1, y + 1) not in cheminCourant:
+    if pixelIsNull(x+1, y+1, pattern) and (x + 1, y + 1) not in cheminCourant:
         lisPotentielPixelNext.append((x + 1, y + 1))
 
-    if pattern[y - 1][x - 1] == 1 and (x - 1, y - 1) not in cheminCourant:
+    if pixelIsNull(x-1, y-1, pattern) and (x - 1, y - 1) not in cheminCourant:
         lisPotentielPixelNext.append((x - 1, y - 1))
 
-    if pattern[y + 1][x - 1] == 1 and (x - 1, y + 1) not in cheminCourant:
+    if pixelIsNull(x-1, y+1, pattern) and (x - 1, y + 1) not in cheminCourant:
         lisPotentielPixelNext.append((x - 1, y + 1))
 
-    if pattern[y - 1][x + 1] == 1 and (x + 1, y - 1) not in cheminCourant:
+    if pixelIsNull(x+1, y-1, pattern) and (x + 1, y - 1) not in cheminCourant:
         lisPotentielPixelNext.append((x + 1, y - 1))
 
-   # switcher = {
-   # pattern[y][x + 1] == 1 and (x + 1, y) not in cheminCourant:
-   #     lisPotentielPixelNext.append((x + 1, y)),
-
-   # pattern[y + 1][x] == 1 and (x, y + 1) not in cheminCourant:
-   #     lisPotentielPixelNext.append((x, y + 1)),
-
-   # pattern[y][x - 1] == 1 and (x - 1, y) not in cheminCourant:
-   #     lisPotentielPixelNext.append((x - 1, y)),
-
-   # pattern[y - 1][x] == 1 and (x, y - 1) not in cheminCourant:
-   #     lisPotentielPixelNext.append((x, y - 1)),
-
-    #pattern[y + 1][x + 1] == 1 and (x + 1, y + 1) not in cheminCourant:
-    #    lisPotentielPixelNext.append((x + 1, y + 1)),
-
-    #pattern[y - 1][x - 1] == 1 and (x - 1, y - 1) not in cheminCourant:
-     #   lisPotentielPixelNext.append((x - 1, y - 1)),
-
-    #pattern[y + 1][x - 1] == 1 and (x - 1, y + 1) not in cheminCourant:
-    #    lisPotentielPixelNext.append((x - 1, y + 1)),
-
-    #pattern[y - 1][x + 1] == 1 and (x + 1, y - 1) not in cheminCourant:
-    #    lisPotentielPixelNext.append((x + 1, y - 1))
-    #}
-
-    #switcher.get(True)
 
     return lisPotentielPixelNext
 
@@ -384,18 +384,7 @@ def trouverPixelSuivant(pixelStart, pattern, cheminCourant):
 
 
 
-
-
-def marquePixel(listPixels, pattern, currentpixel):
-    try:
-        listPixels.append(currentpixel)
-       # pattern[currentpixel[1]][currentpixel[0]] = -1
-    except:
-        print("TEST")
-
-
-
-def findStartFigure(pattern, pixelstart, list_form):
+def findStartFigure(pattern, pixelstart, list_form, size_picture):
 
     ligne = pixelstart[1]
     colonne = pixelstart[0]
@@ -406,7 +395,7 @@ def findStartFigure(pattern, pixelstart, list_form):
     while ligne < size_picture:
         while colonne < size_picture:
 
-            if pixelAllumeInit(pattern,colonne, ligne):
+            if pixelIsNull(colonne, ligne, pattern):
                 pixelStart = (colonne, ligne)
                 pixelFormNotExplore = True
 
@@ -432,31 +421,30 @@ def findStartFigure(pattern, pixelstart, list_form):
 
     return (size_picture-1, size_picture-1)
 
-def testLine(pixelStart, currentPixel, pattern, listPixels):
-    x1 = pixelStart[0]
-    y1 = pixelStart[1]
 
-    x2 = currentPixel[0]
-    y2 = currentPixel[1]
 
-    isLine = True
 
+
+
+def testLine(x1, y1, x2, y2, patternTest):
+
+    res = True
     dx = x2 - x1
     if dx != 0:
         if dx > 0:
             dy = y2 - y1
-            if dy !=0:
+            if dy != 0:
 
                 if dy > 0:
 
                     if dx >= dy:
                         e = dx
-                        dx = 2*e
-                        dy = dy *2
+                        dx = 2 * e
+                        dy = dy * 2
 
-                        isLine = isLine and pixelAllume(pattern, x1, y1, listPixels)
-                        while  x1 != x2:
-                            isLine = isLine and pixelAllume(pattern, x1, y1, listPixels)
+                        res = res and pixelIsNull(x1, y1, patternTest)
+                        while x1 != x2:
+                            res = res and pixelIsNull(x1, y1, patternTest)
                             x1 = x1 + 1
                             e = e - dy
 
@@ -469,9 +457,9 @@ def testLine(pixelStart, currentPixel, pattern, listPixels):
                         dx = dx * 2
                         dy = e * 2
 
-                        isLine = isLine and pixelAllume(pattern, x1, y1, listPixels)
-                        while  y1 != y2:
-                            isLine = isLine and pixelAllume(pattern, x1, y1, listPixels)
+                        res = res and pixelIsNull(x1, y1, patternTest)
+                        while y1 != y2:
+                            res = res and pixelIsNull(x1, y1, patternTest)
                             y1 = y1 + 1
                             e = e - dx
 
@@ -486,9 +474,9 @@ def testLine(pixelStart, currentPixel, pattern, listPixels):
                         dx = 2 * e
                         dy = dy * 2
 
-                        isLine = isLine and pixelAllume(pattern, x1, y1, listPixels)
+                        res = res and pixelIsNull(x1, y1, patternTest)
                         while x1 != x2:
-                            isLine = isLine and pixelAllume(pattern, x1, y1, listPixels)
+                            res = res and pixelIsNull(x1, y1, patternTest)
                             x1 = x1 + 1
                             e = e + dy
 
@@ -501,9 +489,9 @@ def testLine(pixelStart, currentPixel, pattern, listPixels):
                         dx = 2 * dx
                         dy = e * 2
 
-                        isLine = isLine and pixelAllume(pattern, x1, y1, listPixels)
+                        res = res and pixelIsNull(x1, y1, patternTest)
                         while y1 != y2:
-                            isLine = isLine and pixelAllume(pattern, x1, y1, listPixels)
+                            res = res and pixelIsNull(x1, y1, patternTest)
                             y1 = y1 - 1
                             e = e + dx
 
@@ -512,26 +500,27 @@ def testLine(pixelStart, currentPixel, pattern, listPixels):
                                 e = e + dy
             else:
                 while x1 != x2:
-                    isLine = isLine and pixelAllume(pattern, x1, y1, listPixels)
+                    res = res and pixelIsNull(x1, y1, patternTest)
                     x1 = x1 + 1
 
 
         else:
+
             dy = y2 - y1
             if dy != 0:
 
                 if dy > 0:
-
                     if -dx >= dy:
-# 4eme octant
+                        # 4eme octant
 
                         e = dx
                         dx = 2 * e
                         dy = dy * 2
 
-                        isLine = isLine and pixelAllume(pattern, x1, y1, listPixels)
-                        while  x1 != x2:
-                            isLine = isLine and pixelAllume(pattern, x1, y1, listPixels)
+                        res = res and pixelIsNull(x1, y1, patternTest)
+
+                        while x1 != x2:
+                            res = res and pixelIsNull(x1, y1, patternTest)
                             x1 = x1 - 1
                             e = e + dy
 
@@ -544,26 +533,30 @@ def testLine(pixelStart, currentPixel, pattern, listPixels):
                         dx = dx * 2
                         dy = e * 2
 
-                        isLine = isLine and pixelAllume(pattern, x1, y1, listPixels)
+
+
+                        res = res and pixelIsNull(x1, y1, patternTest)
+
                         while y1 != y2:
-                            isLine = isLine and pixelAllume(pattern, x1, y1, listPixels)
+
+                            res = res and pixelIsNull(x1, y1, patternTest)
+
                             y1 = y1 + 1
                             e = e + dx
 
                             if e <= 0:
                                 x1 = x1 - 1
                                 e = e + dy
-
                 else:
-# 5eme octant
+                    # 5eme octant
                     if dx <= dy:
                         e = dx
                         dx = 2 * e
                         dy = dy * 2
 
-                        isLine = isLine and pixelAllume(pattern, x1, y1, listPixels)
+                        res = res and pixelIsNull(x1, y1, patternTest)
                         while x1 != x2:
-                            isLine = isLine and pixelAllume(pattern, x1, y1, listPixels)
+                            res = res and pixelIsNull(x1, y1, patternTest)
                             x1 = x1 - 1
                             e = e - dy
 
@@ -576,10 +569,10 @@ def testLine(pixelStart, currentPixel, pattern, listPixels):
                         dx = 2 * dx
                         dy = e * 2
 
-                        isLine = isLine and pixelAllume(pattern, x1, y1, listPixels)
+                        res = res and pixelIsNull(x1, y1, patternTest)
 
                         while y1 != y2:
-                            isLine = isLine and pixelAllume(pattern, x1, y1, listPixels)
+                            res = res and pixelIsNull(x1, y1, patternTest)
                             y1 = y1 - 1
                             e = e - dx
 
@@ -588,11 +581,11 @@ def testLine(pixelStart, currentPixel, pattern, listPixels):
                                 e = e + dy
 
             else:
-                isLine = isLine and pixelAllume(pattern, x1, y1, listPixels)
+                res = res and pixelIsNull(x1, y1, patternTest)
 
                 while x1 != x2:
                     x1 = x1 - 1
-                    isLine = isLine and pixelAllume(pattern, x1, y1, listPixels)
+                    res = res and pixelIsNull(x1, y1, patternTest)
 
     else:
         dy = y2 - y1
@@ -600,15 +593,15 @@ def testLine(pixelStart, currentPixel, pattern, listPixels):
             if dy > 0:
                 while y1 != y2:
                     y1 = y1 + 1
-                    isLine = isLine and pixelAllume(pattern, x1, y1, listPixels)
+                    res = res and pixelIsNull(x1, y1, patternTest)
 
             else:
                 while y1 != y2:
                     y1 = y1 - 1
-                    isLine = isLine and pixelAllume(pattern, x1, y1, listPixels)
+                    res = res and pixelIsNull(x1, y1, patternTest)
 
 
-    return isLine
+    return res
 
 
 
@@ -632,40 +625,15 @@ def getLine(line, pos):
 
 
 
-def pixelAllumeInit(matrice, x, y):
+def pixelIsNull(x, y, matriceSource):
 
-    return matrice[y][x] == 1
+    pixelNone = Pixel(x, y, (255, 255, 255))
+  #  print("PIXEL")
 
-def pixelAllume(matrice, x, y, listPixels):
+   # print(matriceSource.getPixel(x, y).getX())
+   # print(matriceSource.getPixel(x, y).getY())
 
-
-    return matrice[y][x] == 1
-    #return not ((x,y) in listPixels)
- #   return pixel[0] == 0 and pixel[1] == 0 and pixel[2] == 0
-
-
-
-def parcourtPatternX(posX, posY, endX, pattern):
-
-    if posX == endX:
-        return pixelAllume(pattern[posX][posY])
-    else:
-        return parcourtPatternX(posX + 1, posY, endX, pattern) and pixelAllume(pattern[posX][posY])
-
-
-def parcourtPatternY(posX, posY, endY, pattern):
-
-    if posY == endY:
-        return pixelAllume(pattern[posX][posY])
-    else:
-        return parcourtPatternY(posX, posY + 1, endY, pattern) and pixelAllume(pattern[posX][posY])
-
-
-
-
-
-
-
+    return not matriceSource.getPixel(x, y).compare(pixelNone)
 
 
 
