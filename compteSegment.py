@@ -4,54 +4,31 @@ import cv2 as cv
 import numpy
 
 ##ALGO:
-from bibliothequePython.bib import Matrice, Pixel
-
-option1 = cv.imread("pattern/compteSegment/option1.png")
-option2 = cv.imread("pattern/compteSegment/option2.png")
-option3 = cv.imread("pattern/compteSegment/option3.png")
+from bibliothequePython.bib import Matrice, Pixel, Exercice, Opencv
 
 
+def testAlgo(nameExercice, resultat, nbMatriceResult):
+    opencv = Opencv(nameExercice)
+    opencv.setNumberImageResultat(nbMatriceResult)
+    opencv.getNumberImage()
+    opencv.extractImage()
+    opencv.initSizeImage()
 
-listPatternInit = [option1, option2, option3]
+    exercice = Exercice(resultat, nameExercice)
+    listPatternInit = opencv.initExercice(opencv.sizeImage)
+    print("test")
+    print(opencv.sizeImage)
 
-resultatValid = [0,3,6]
+    print("pattern")
+    for patern in listPatternInit:
+        print(patern)
 
+    solution_user = [0, 0, 0]
 
-#Donnée à l'utilisateur
-resultat = [0,0,0]
-size_matrice = 23
-
-
-def initExercice():
-    newListPattern=[]
-
-    for pattern in listPatternInit:
-        newMatrice = Matrice(size_matrice)
-        newMatrice.initContent(pattern)
-        newListPattern.append(newMatrice)
-
-    return newListPattern
-
-
-
-def testAlgo():
-
-    listMatrice = initExercice()
-    doExercice(listMatrice)
-
-    return assertRes()
+    solution_user = doExercice(listPatternInit, opencv.sizeImage, solution_user)
+    return exercice.assertRes(solution_user, resultat)
 
 
-def assertRes():
-    print("resultat")
-    print(resultat[0])
-    print(resultat[1])
-    print(resultat[2])
-
-    if resultat[0] == resultatValid[0] and resultat[1] == resultatValid[1] and resultat[2] == resultatValid[2]:
-        return "SUCCESS"
-    else:
-        return "ERROR"
 
 
 ### FIN Ajouté par l'API avant l'envoie à judge0
@@ -69,7 +46,7 @@ def assertRes():
 
 
 
-def doExercice(listPattern):
+def doExercice(listPattern, size_matrice, resultat_utilisateur):
 
     idImage = 0
     for pattern in listPattern:
@@ -80,7 +57,7 @@ def doExercice(listPattern):
         listPixelSegment = []
         init_list_pixel_form = []
 
-        pixelStart = findStartFigure(pattern)
+        pixelStart = findStartFigure(pattern, size_matrice)
 
         if pixelStart != None:
             count_line = 1
@@ -102,11 +79,11 @@ def doExercice(listPattern):
                     listPixelSegment.append(pixelStart)
 
 
-        resultat[idImage] = count_line
+        resultat_utilisateur[idImage] = count_line
         idImage += 1
 
 
-    return count_line
+    return resultat_utilisateur
 
 
 def trouverPlusLongChemin(pixelCurent, pattern, cheminCourant, pixelStart, insertPixel):
@@ -175,7 +152,7 @@ def trouverPixelSuivant(pixelStart, pattern, cheminCourant):
 
 
 
-def findStartFigure(pattern):
+def findStartFigure(pattern, size_matrice):
 
     ligne = 0
     colonne = 0
@@ -387,5 +364,7 @@ def pixelIsNull(x, y, matriceSource):
 
 
 if __name__ == '__main__':
-    print("EXO 2")
-    print(testAlgo())
+    nameExercice = "compteSegment"
+    resultat = [0, 3, 6]
+    nbMatriceResult = 0
+    print(testAlgo(nameExercice, resultat, nbMatriceResult))

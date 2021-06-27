@@ -3,50 +3,32 @@
 
 import cv2 as cv
 
-from bibliothequePython.bib import Matrice, Pixel
-
-option1 = cv.imread("pattern/comparaisonRemplissage/option1.png")
-option2 = cv.imread("pattern/comparaisonRemplissage/option2.png")
-option3 = cv.imread("pattern/comparaisonRemplissage/option3.png")
+from bibliothequePython.bib import Matrice, Pixel, Opencv, Exercice
 
 
 
+def testAlgo(nameExercice, resultat, nbMatriceResult):
+    opencv = Opencv(nameExercice)
+    opencv.setNumberImageResultat(nbMatriceResult)
+    opencv.getNumberImage()
+    opencv.extractImage()
+    opencv.initSizeImage()
 
-listPatternInit = [option1, option2, option3]
-resultat = 2
+    exercice = Exercice(resultat, nameExercice)
+    listPatternInit = opencv.initExercice(opencv.sizeImage)
+    print("test")
+    print(opencv.sizeImage)
 
-# taille de l'image en pixel
-size_matrice = 23
-
-
-
-
-
-def initExercice():
-    newListPattern=[]
-
-    for pattern in listPatternInit:
-        newMatrice = Matrice(size_matrice)
-        newMatrice.initContent(pattern)
-        newListPattern.append(newMatrice)
-
-    return newListPattern
+    print("pattern")
+    for patern in listPatternInit:
+        print(patern)
 
 
 
-def testAlgo():
-    listMatrice = initExercice()
-
-    solution_user = remplissageBalayage(listMatrice)
-
-    return assertRes(solution_user, resultat)
+    solution_user = doExercice(listPatternInit, opencv.sizeImage)
+    return exercice.assertRes(solution_user, resultat)
 
 
-def assertRes(solution_user, resultat):
-    if solution_user == resultat:
-        return "SUCCESS"
-    else:
-        return "ERROR"
 
 
 ### FIN Ajouté par l'API avant l'envoie à judge0
@@ -62,21 +44,21 @@ def assertRes(solution_user, resultat):
 
 ### Algo crée par l'utilisateur
 
-def remplissageDiffusion(listPattern):
-    idSolution = -1
-
-    for pattern in listPattern:
-        pattern.toStringPixel()
-        listPixelContent = []
-        res = decalePixel(start_X, start_Y, pattern, listPixelContent)
-        if res:
-            return idSolution
-        idSolution +=1
-
-    return -1
 
 
-def remplissageBalayage(listPattern):
+
+def doExercice(listPatternInit,size_matrice):
+
+
+    res1 = remplissageBalayage(listPatternInit, size_matrice)
+
+    return res1
+
+
+
+
+
+def remplissageBalayage(listPattern, size_matrice):
     idSolution = 0
 
     for pattern in listPattern:
@@ -100,9 +82,6 @@ def remplissageBalayage(listPattern):
 
 
                     if not inForm:
-                        print("PIXEL enter IN")
-                        print(colonne)
-                        print(ligne)
 
                         inForm = True
                         cpt_bordure += 1
@@ -110,9 +89,6 @@ def remplissageBalayage(listPattern):
                 else:
 
                     if inForm:
-                        print("PIXEL enter OUT")
-                        print(colonne)
-                        print(ligne)
 
                         inForm = False
                         cpt_bordure += 1
@@ -126,8 +102,6 @@ def remplissageBalayage(listPattern):
 
 
 
-        print("idSolution" + str(idSolution))
-        print(cpt_bordure)
 
         if not echec:
             return idSolution
@@ -139,7 +113,7 @@ def remplissageBalayage(listPattern):
     return 0
 
 
-def decalePixel(x, y, pattern, listPixelForme):
+def decalePixel(x, y, pattern, listPixelForme, size_matrice):
 
         if x <= size_matrice-1 and y<= size_matrice-1:
 
@@ -150,10 +124,10 @@ def decalePixel(x, y, pattern, listPixelForme):
 
                     listPixelForme.append((x, y))
 
-                    return decalePixel(x+1,y,pattern, listPixelForme) and \
-                    decalePixel(x,y+1,pattern, listPixelForme) and \
-                    decalePixel(x-1,y,pattern, listPixelForme) and \
-                    decalePixel(x,y-1,pattern, listPixelForme)
+                    return decalePixel(x+1,y,pattern, listPixelForme, size_matrice) and \
+                    decalePixel(x,y+1,pattern, listPixelForme, size_matrice) and \
+                    decalePixel(x-1,y,pattern, listPixelForme, size_matrice) and \
+                    decalePixel(x,y-1,pattern, listPixelForme, size_matrice)
 
                 else:
                     return False
@@ -179,6 +153,9 @@ def pixelIsNotNull(x, y, matriceSource):
 
 
 
+
 if __name__ == '__main__':
-    print("EXO 2")
-    print(testAlgo())
+    nameExercice = "comparaisonRemplissage"
+    resultat = 2
+    nbMatriceResult = 0
+    print(testAlgo(nameExercice, resultat, nbMatriceResult))

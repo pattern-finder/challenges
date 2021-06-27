@@ -1,4 +1,6 @@
-
+import cv2 as cv
+from PIL import Image
+import os
 
 class Matrice:
     def __init__(self, size):
@@ -119,3 +121,92 @@ class Pixel:
 
 
 
+
+
+class Opencv:
+    def __init__(self, nameExercice):
+        self.nameExercice = nameExercice
+        self.numberImage = 0
+        self.listPatternInit = []
+        self.nbMatriceResult = 0
+        self.sizeImage = 0
+
+
+
+    def setNumberImageResultat(self, nbMatriceResult):
+        self.nbMatriceResult = nbMatriceResult
+
+    def initSizeImage(self):
+        img = Image.open("./pattern/"+self.nameExercice+"/option1.png")
+        self.sizeImage = img.size[0]
+
+
+    def getNumberImage(self):
+
+        PATH = "./pattern/"+self.nameExercice
+
+        cpt = 0
+        for image in os.listdir(PATH):
+            if image.endswith(".png"):
+                cpt += 1
+
+        self.numberImage = cpt - self.nbMatriceResult
+
+
+    def extractImage(self):
+
+        i = 1
+
+        while i <= self.numberImage:
+            img = cv.imread("./pattern/"+self.nameExercice+"/option"+str(i)+".png")
+            i += 1
+
+            self.listPatternInit.append(img)
+
+
+    def initExercice(self, size_matrice):
+        newListPattern=[]
+
+        print(len(self.listPatternInit))
+
+        for pattern in self.listPatternInit:
+            newMatrice = Matrice(size_matrice)
+            newMatrice.initContent(pattern)
+            print(newMatrice.matrice_content)
+
+            newListPattern.append(newMatrice)
+
+        return newListPattern
+
+
+    def matriceResult(self,size_matrice):
+
+        img = cv.imread("./pattern/" + self.nameExercice + "/result.png")
+        resultMatrice = Matrice(size_matrice)
+        resultMatrice.initContent(img)
+
+        return resultMatrice
+
+
+class Exercice:
+
+    def __init__(self, resultat, nameExercice):
+        self.resultat = resultat
+        self.nameExercice = nameExercice
+
+
+
+    def assertRes(self,solution_user, resultat):
+        if solution_user == resultat:
+            return "SUCCESS"
+        else:
+            return "ERROR"
+
+
+
+
+
+if __name__ == '__main__':
+    opencv = Opencv("comparaisonMatrice")
+    opencv.getNumberImage()
+    print(opencv.numberImage)

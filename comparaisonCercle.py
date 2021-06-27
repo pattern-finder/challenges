@@ -3,48 +3,35 @@
 import cv2 as cv
 import numpy
 
-from bibliothequePython.bib import Matrice, Pixel
-
-option1 = cv.imread("./pattern/comparaisonCercle/option1.png")
-option2 = cv.imread("./pattern/comparaisonCercle/option2.png")
-option3 = cv.imread("./pattern/comparaisonCercle/option3.png")
-option4 = cv.imread("./pattern/comparaisonCercle/option4.png")
+from bibliothequePython.bib import Matrice, Pixel, Opencv, Exercice
 
 
+def testAlgo(nameExercice, resultat, nbMatriceResult):
+    opencv = Opencv(nameExercice)
+    opencv.setNumberImageResultat(nbMatriceResult)
+    opencv.getNumberImage()
+    opencv.extractImage()
+    opencv.initSizeImage()
+
+    exercice = Exercice(resultat, nameExercice)
+    listPatternInit = opencv.initExercice(opencv.sizeImage)
+    print("test")
+    print(opencv.sizeImage)
+
+    print("pattern")
+    for patern in listPatternInit:
+        print(patern)
+
+    start_X = int(opencv.sizeImage / 2)
+    start_Y = int(opencv.sizeImage / 2)
+
+    solution_user = doExercice(listPatternInit, start_X, start_Y)
+    print(solution_user)
+    print(resultat)
+
+    return exercice.assertRes(solution_user, resultat)
 
 
-listPatternInit = [option1, option2, option3, option4]
-resultat = 3
-
-#donnée à l'utilisateur
-size_matrice = 23
-start_X = 11
-start_Y = 11
-
-def initExercice():
-    newListPattern=[]
-
-    for pattern in listPatternInit:
-        newMatrice = Matrice(size_matrice)
-        newMatrice.initContent(pattern)
-        newListPattern.append(newMatrice)
-
-    return newListPattern
-
-
-def testAlgo():
-    listMatrice = initExercice()
-
-    solution_user = doExercice(listMatrice)
-
-    return assertRes(solution_user, resultat)
-
-
-def assertRes(solution_user, resultat):
-    if solution_user == resultat:
-        return "SUCCESS"
-    else:
-        return "ERROR"
 
 
 ### FIN Ajouté par l'API avant l'envoie à judge0
@@ -62,7 +49,7 @@ def assertRes(solution_user, resultat):
 
 
 ### Algo crée par l'utilisateur
-def doExercice(listPattern):
+def doExercice(listPattern, start_X, start_Y):
 
     solutionId = 0
 
@@ -85,8 +72,7 @@ def doExercice(listPattern):
             pixelIsNull(-x + start_X, -y + start_Y, pattern) and \
             pixelIsNull(-y + start_X, -x + start_Y, pattern)
 
-            print("res init")
-            print(res)
+
 
 
             while (y > x):
@@ -105,9 +91,6 @@ def doExercice(listPattern):
                 pixelIsNull(y + start_X, -x + start_Y, pattern) and \
                 pixelIsNull(-x + start_X, -y + start_Y, pattern) and \
                 pixelIsNull(-y + start_X, -x + start_Y, pattern)
-                print("res clac")
-                print(res)
-                print(r)
 
             r +=1
 
@@ -121,10 +104,6 @@ def doExercice(listPattern):
 def pixelIsNull(x, y, matriceSource):
 
     pixelNone = Pixel(x, x, (255, 255, 255))
-    print("PIXEL")
-
-    print(matriceSource.getPixel(x, y).getX())
-    print(matriceSource.getPixel(x, y).getY())
 
     return not matriceSource.getPixel(x, y).compare(pixelNone)
 
@@ -137,5 +116,8 @@ def pixelIsNull(x, y, matriceSource):
 
 
 if __name__ == '__main__':
-    print("EXO 2")
-    print(testAlgo())
+
+    nameExercice = "comparaisonCercle"
+    resultat = 3
+    nbMatriceResult = 0
+    print(testAlgo(nameExercice, resultat, nbMatriceResult))

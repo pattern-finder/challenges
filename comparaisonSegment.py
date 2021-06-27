@@ -4,50 +4,32 @@ import cv2 as cv
 import matplotlib
 import numpy
 
-from bibliothequePython.bib import Matrice, Pixel
+from bibliothequePython.bib import Matrice, Pixel, Opencv, Exercice
 
-option1 = cv.imread("pattern/comparaisonSegment/option1.png")
-option2 = cv.imread("pattern/comparaisonSegment/option2.png")
-option3 = cv.imread("pattern/comparaisonSegment/option3.png")
-option4 = cv.imread("pattern/comparaisonSegment/option4.png")
+def testAlgo(nameExercice, resultat, nbMatriceResult):
+    opencv = Opencv(nameExercice)
+    opencv.setNumberImageResultat(nbMatriceResult)
+    opencv.getNumberImage()
+    opencv.extractImage()
+    opencv.initSizeImage()
 
+    exercice = Exercice(resultat, nameExercice)
+    listPatternInit = opencv.initExercice(opencv.sizeImage)
+    print("test")
+    print(opencv.sizeImage)
 
-listPatternInit = [option1, option2, option3, option4]
+    print("pattern")
+    for patern in listPatternInit:
+        print(patern)
 
-resultat = 0
+    listPosStart = [(13, 4), (13, 4), (13, 4), (16, 7)]
+    listPosEnd = [(9, 17), (9, 17), (9, 17), (9, 17)]
 
-
-
-
-# Donnée à l'utilisateur
-size_matrice = 23
-listPosStart = [(13, 4), (13, 4), (13, 4), (16, 7)]
-listPosEnd = [(9, 17), (9, 17), (9, 17), (9, 17)]
-
-def initExercice():
-    newListPattern=[]
-
-    for pattern in listPatternInit:
-        newMatrice = Matrice(size_matrice)
-        newMatrice.initContent(pattern)
-        newListPattern.append(newMatrice)
-
-    return newListPattern
+    solution_user = doExercice(listPatternInit, listPosStart ,listPosEnd ,opencv.sizeImage)
+    return exercice.assertRes(solution_user, resultat)
 
 
-def testAlgo():
-    listMatrice = initExercice()
 
-    solution_user = doExercice(listMatrice)
-
-    return assertRes(solution_user, resultat)
-
-
-def assertRes(solution_user, resultat):
-    if solution_user == resultat:
-        return "SUCCESS"
-    else:
-        return "ERROR"
 
 
 ### FIN Ajouté par l'API avant l'envoie à judge0
@@ -64,7 +46,7 @@ def assertRes(solution_user, resultat):
 
 ### Algo crée par l'utilisateur
 
-def doExercice(listPattern):
+def doExercice(listPattern, listPosStart ,listPosEnd ,size_matrice):
 
     i=0
 
@@ -194,8 +176,7 @@ def testLine(x1, y1, x2, y2, patternTest):
                         res = res and pixelIsNull(x1, y1, patternTest)
 
                         while y1 != y2:
-                            print("oko")
-                            print(pixelIsNull(x1, y1, patternTest))
+
                             res = res and pixelIsNull(x1, y1, patternTest)
 
                             y1 = y1 + 1
@@ -204,7 +185,6 @@ def testLine(x1, y1, x2, y2, patternTest):
                             if e <= 0:
                                 x1 = x1 - 1
                                 e = e + dy
-                        print("ENDDDDDDDDDDDDDDDDDDDD")
                 else:
                     # 5eme octant
                     if dx <= dy:
@@ -264,10 +244,7 @@ def testLine(x1, y1, x2, y2, patternTest):
 def pixelIsNull(x, y, matriceSource):
 
     pixelNone = Pixel(x, y, (255, 255, 255))
-    print("PIXEL")
 
-    print(matriceSource.getPixel(x, y).getX())
-    print(matriceSource.getPixel(x, y).getY())
 
     return not matriceSource.getPixel(x, y).compare(pixelNone)
 
@@ -281,7 +258,8 @@ def pixelIsNull(x, y, matriceSource):
 
 ### FIN  Algo crée par l'utilisateur
 
-
 if __name__ == '__main__':
-    print("EXO 2")
-    print(testAlgo())
+    nameExercice = "comparaisonSegment"
+    resultat = 0
+    nbMatriceResult = 0
+    print(testAlgo(nameExercice, resultat, nbMatriceResult))

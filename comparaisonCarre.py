@@ -3,53 +3,33 @@
 
 import cv2 as cv
 
-from bibliothequePython.bib import Matrice, Pixel
-
-option1 = cv.imread("./pattern/comparaisonCarre/option1.png")
-option2 = cv.imread("./pattern/comparaisonCarre/option2.png")
-option3 = cv.imread("./pattern/comparaisonCarre/option3.png")
-option4 = cv.imread("./pattern/comparaisonCarre/option4.png")
-
-
-listPatternInit = [option1, option2, option3, option4]
-resultat = 1
-
-
-def initExercice():
-    newListPattern=[]
-
-    for pattern in listPatternInit:
-        newMatrice = Matrice(size_matrice)
-        newMatrice.initContent(pattern)
-        newListPattern.append(newMatrice)
-
-    return newListPattern
-
-
-###Donnée à l'utilisateur
-size_matrice = 23
-start_X = (size_matrice/2)-1
-start_Y = (size_matrice/2)-1
+from bibliothequePython.bib import Matrice, Pixel, Exercice, Opencv
 
 
 
+def testAlgo(nameExercice, resultat, nbMatriceResult):
+    opencv = Opencv(nameExercice)
+    opencv.setNumberImageResultat(nbMatriceResult)
+    opencv.getNumberImage()
+    opencv.extractImage()
+    opencv.initSizeImage()
 
+    exercice = Exercice(resultat, nameExercice)
+    listPatternInit = opencv.initExercice(opencv.sizeImage)
+    print("test")
+    print(opencv.sizeImage)
 
+    print("pattern")
+    for patern in listPatternInit:
+        print(patern)
 
-def testAlgo():
+    start_X = int(opencv.sizeImage / 2) - 1
+    start_Y = int(opencv.sizeImage / 2) - 1
 
-    listMatrice = initExercice()
+    solution_user = doExercice(listPatternInit, start_X, start_Y)
+    print(solution_user)
+    return exercice.assertRes(solution_user, resultat)
 
-    solution_user = doExercice(listMatrice)
-
-    return assertRes(solution_user, resultat)
-
-
-def assertRes(solution_user, resultat):
-    if solution_user == resultat:
-        return "SUCCESS"
-    else:
-        return "ERROR"
 
 
 ### FIN Ajouté par l'API avant l'envoie à judge0
@@ -67,7 +47,7 @@ def assertRes(solution_user, resultat):
 
 ### Algo crée par l'utilisateur
 
-def doExercice(listPattern):
+def doExercice(listPattern, start_X, start_Y):
     solutionId = -1
     id = 0
     equal = False
@@ -150,5 +130,10 @@ def parcourtPatternY(posX, posY, endY, pattern):
 
 
 if __name__ == '__main__':
-    print("EXO 2")
-    print(testAlgo())
+
+    nameExercice = "comparaisonCarre"
+    resultat = 3
+    nbMatriceResult = 0
+
+    print(testAlgo(nameExercice, resultat, nbMatriceResult))
+

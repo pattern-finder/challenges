@@ -3,84 +3,41 @@
 import cv2 as cv
 import numpy
 import math
-from scipy import misc
 
 
-from bibliothequePython.bib import Matrice, Pixel
+from bibliothequePython.bib import Matrice, Pixel, Opencv, Exercice
 
-option2 = cv.imread("pattern/dataForm/option5.png")
+def testAlgo(nameExercice, resultat, nbMatriceResult):
+    opencv = Opencv(nameExercice)
+    opencv.setNumberImageResultat(nbMatriceResult)
+    opencv.getNumberImage()
+    opencv.extractImage()
+    opencv.initSizeImage()
 
-
-
-listPatternInit = [option2]
-sizePattern = 116
-
-resultat_valide = {
-    "carré": 2,
-    "rectangle": 3,
-    "autre parallèlogramme": 1,
-
-    "triangle rectangle": 2,
-    "triangle équilatéral": 0,
-    "triangle isocèle": 2,
-    "triangle quelconque": 1,
-
-    "polygone à 5 coté": 1,
-    "polygone à 6 coté": 0,
-    "polygone à 7 coté": 2,
-}
+    exercice = Exercice(resultat, nameExercice)
+    listPatternInit = opencv.initExercice(opencv.sizeImage)
 
 
+    solutionUser = {
+        "carré": 0,
+        "rectangle": 0,
+        "autre parallèlogramme": 0,
+
+        "triangle rectangle": 0,
+        "triangle équilatéral": 0,
+        "triangle isocèle": 0,
+        "triangle quelconque": 0,
+
+        "polygone à 5 coté": 0,
+        "polygone à 6 coté": 0,
+        "polygone à 7 coté": 0,
+    }
+
+    solution_user = doExercice(listPatternInit, solutionUser, opencv.sizeImage)
+    print(solution_user)
+    return exercice.assertRes(solution_user, resultat)
 
 
-
-listPatternSize = [sizePattern]
-
-
-
-
-
-
-def initExercice():
-    newListPattern=[]
-
-    for pattern in listPatternInit:
-      #  print(pattern)
-        newMatrice = Matrice(sizePattern)
-        newMatrice.initContent(pattern)
-        newListPattern.append(newMatrice)
-
-    return newListPattern
-
-
-def testAlgo():
-    listMatrice = initExercice()
-    solution_user = doExercice(listMatrice)
-
-    return assertRes()
-
-
-def assertRes():
-    if resultat_valide == dict_resultat:
-        return "SUCCESS"
-    else:
-        return "ERROR"
-
-
-dict_resultat = {
-    "carré": 0,
-    "rectangle": 0,
-    "autre parallèlogramme": 0,
-
-    "triangle rectangle": 0,
-    "triangle équilatéral": 0,
-    "triangle isocèle": 0,
-    "triangle quelconque": 0,
-
-    "polygone à 5 coté": 0,
-    "polygone à 6 coté": 0,
-    "polygone à 7 coté": 0,
-}
 
 
 ### FIN Ajouté par l'API avant l'envoie à judge0
@@ -108,22 +65,16 @@ dict_resultat = {
 
 
 
-
-
-
-
-
 ### Algo crée par l'utilisateur
 
 
 
-def doExercice(listPattern):
+def doExercice(listPattern,solutionUser, size_picture):
 
 
     id=0
 
     for pattern in listPattern:
-        size_picture = listPatternSize[id]
         count_line = 0
         list_form = []
 
@@ -208,19 +159,21 @@ def doExercice(listPattern):
                         id = 0
 
 
-                detect_forme(listeSegment, listAngleForme)
+                detect_forme(listeSegment, listAngleForme, solutionUser)
                 listSegmentFormParcourtDroit = []
 
             else:
                 stop = True
 
     id +=1
-    print(dict_resultat)
 
-    return count_line
+    return solutionUser
 
 
-def detect_forme(listeSegment, listeAngle):
+
+
+
+def detect_forme(listeSegment, listeAngle, solutionUser):
 
     if len(listeSegment) == 3:
         angle1 = listeAngle[0]
@@ -228,16 +181,16 @@ def detect_forme(listeSegment, listeAngle):
         angle3 = listeAngle[2]
 
         if angle1 != angle2 and angle1 != angle3 and angle2 != angle3:
-            dict_resultat["triangle quelconque"] += 1
+            solutionUser["triangle quelconque"] += 1
 
         elif angle1 == angle2 == angle3:
-            dict_resultat["triangle équilatéral"] += 1
+            solutionUser["triangle équilatéral"] += 1
 
         elif angle1 == angle2 or angle1 == angle3 or angle2 == angle3:
-            dict_resultat["triangle isocèle"] += 1
+            solutionUser["triangle isocèle"] += 1
 
         if angle1 == 90 or angle2 == 90 or angle3 == 90:
-            dict_resultat["triangle rectangle"] += 1
+            solutionUser["triangle rectangle"] += 1
 
 
     elif  len(listeSegment) == 4:
@@ -254,31 +207,25 @@ def detect_forme(listeSegment, listeAngle):
         if angle1 == 90 and angle2 == 90 and angle3 == 90 and angle4 ==90:
 
             if len(segment1) == len(segment2) == len(segment3) == len(segment4):
-                dict_resultat["carré"] += 1
+                solutionUser["carré"] += 1
             else:
-                dict_resultat["rectangle"] += 1
+                solutionUser["rectangle"] += 1
 
         else:
-            dict_resultat["autre parallèlogramme"] += 1
+            solutionUser["autre parallèlogramme"] += 1
 
 
     elif len(listeSegment) == 5:
-        dict_resultat["polygone à 5 coté"] += 1
+        solutionUser["polygone à 5 coté"] += 1
 
     elif  len(listeSegment) == 6:
 
-        for segment in listeSegment:
-            print(segment)
 
-        print("")
-        print("")
-        print("")
-        print("")
 
-        dict_resultat["polygone à 6 coté"] += 1
+        solutionUser["polygone à 6 coté"] += 1
 
     elif len(listeSegment) == 7:
-        dict_resultat["polygone à 7 coté"] += 1
+        solutionUser["polygone à 7 coté"] += 1
 
 def calculNorme(dx, dy):
     return numpy.sqrt(dx * dx + dy * dy)
@@ -607,20 +554,6 @@ def testLine(x1, y1, x2, y2, patternTest):
 
 
 
-def printMatrice(matrice):
-
-    for line in matrice:
-        print(getLine(line, 0))
-
-
-def getLine(line, pos):
-
-    if pos < len(line):
-        return str(line[pos]) + getLine(line, pos+1)
-
-    else:
-        return ""
-
 
 
 
@@ -628,11 +561,6 @@ def getLine(line, pos):
 def pixelIsNull(x, y, matriceSource):
 
     pixelNone = Pixel(x, y, (255, 255, 255))
-  #  print("PIXEL")
-
-   # print(matriceSource.getPixel(x, y).getX())
-   # print(matriceSource.getPixel(x, y).getY())
-
     return not matriceSource.getPixel(x, y).compare(pixelNone)
 
 
@@ -640,7 +568,22 @@ def pixelIsNull(x, y, matriceSource):
 
 ### FIN  Algo crée par l'utilisateur
 
-
 if __name__ == '__main__':
-    print("EXO 2")
-    print(testAlgo())
+    nameExercice = "dataForm"
+
+    resultat = {
+        "carré": 2,
+        "rectangle": 3,
+        "autre parallèlogramme": 1,
+
+        "triangle rectangle": 2,
+        "triangle équilatéral": 0,
+        "triangle isocèle": 2,
+        "triangle quelconque": 1,
+
+        "polygone à 5 coté": 1,
+        "polygone à 6 coté": 0,
+        "polygone à 7 coté": 2,
+    }
+    nbMatriceResult = 0
+    print(testAlgo(nameExercice, resultat, nbMatriceResult))

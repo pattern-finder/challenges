@@ -5,53 +5,39 @@ from bibliothequePython import bib
 
 import cv2 as cv
 
-from bibliothequePython.bib import Matrice
-
-result = cv.imread("./pattern/comparaisonMatrice/result.png")
-option1 = cv.imread("./pattern/comparaisonMatrice/option1.png")
-option2 = cv.imread("./pattern/comparaisonMatrice/option2.png")
-option3 = cv.imread("./pattern/comparaisonMatrice/option3.png")
-option4 = cv.imread("./pattern/comparaisonMatrice/option4.png")
-option5 = cv.imread("./pattern/comparaisonMatrice/option5.png")
-
-
-
-resultat = 1
-
-
-def initExercice():
-    newListPattern=[]
-
-    for pattern in listPatternInit:
-        newMatrice = Matrice(size_matrice)
-        newMatrice.initContent(pattern)
-        newListPattern.append(newMatrice)
-
-    return newListPattern
+from bibliothequePython.bib import Matrice, Opencv, Exercice
 
 
 
 
-def testAlgo():
 
-    listMatrice = initExercice()
-    matrice_result = Matrice(size_matrice)
-    matrice_result.initContent(result)
+def testAlgo(nameExercice, resultat, nbMatriceResult):
+    opencv = Opencv(nameExercice)
+    opencv.setNumberImageResultat(nbMatriceResult)
+    opencv.getNumberImage()
+    opencv.extractImage()
+    opencv.initSizeImage()
 
-    solution_user = doExercice(listMatrice, matrice_result)
+    exercice = Exercice(resultat, nameExercice)
+    listPatternInit = opencv.initExercice(opencv.sizeImage)
+    print("test")
+    print(opencv.sizeImage)
+    matrice_result = opencv.matriceResult(opencv.sizeImage)
 
-    return assertRes(solution_user ,resultat)
+    print("pattern")
+    for patern in listPatternInit:
+        print(patern)
 
 
-def assertRes(solution_user ,resultat):
-    if solution_user == resultat:
-        return "SUCCESS"
-    else:
-        return "ERROR"
+    solution_user = doExercice(listPatternInit, matrice_result)
+    print(solution_user)
+    return exercice.assertRes(solution_user, resultat)
+
+
+
 
 ###Donnée à l'utilisateur
-listPatternInit = [option1, option2, option3, option4,option5 ]
-size_matrice = 23
+
 
 ### FIN Ajouté par l'API avant l'envoie à judge0
 
@@ -100,7 +86,6 @@ def doExercice(listMatrice, matriceInputToFind):
 
 
 def compatrePixel(x, y, matriceSource, matriceCible):
-
     return matriceSource.getPixel(x, y).compare(matriceCible.getPixel(x, y))
 
 
@@ -110,5 +95,9 @@ def compatrePixel(x, y, matriceSource, matriceCible):
 
 
 if __name__ == '__main__':
-    print("EXO 1")
-    print(testAlgo())
+    nameExercice = "comparaisonMatrice"
+    resultat = 2
+    nbMatriceResult = 1
+
+    print(testAlgo(nameExercice, resultat, nbMatriceResult))
+

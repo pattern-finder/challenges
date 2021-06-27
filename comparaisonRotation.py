@@ -2,56 +2,38 @@
 
 
 from math import *
-import cv2 as cv
-from bibliothequePython.bib import Matrice, Pixel
-
-result = cv.imread("pattern/comparaisonRotation/result.png")
-option1 = cv.imread("pattern/comparaisonRotation/option1.png")
-option2 = cv.imread("pattern/comparaisonRotation/option2.png")
-option3 = cv.imread("pattern/comparaisonRotation/option3.png")
-option4 = cv.imread("pattern/comparaisonRotation/option4.png")
-
-resultat = 3
-
-def initExercice():
-    newListPattern=[]
-
-    for pattern in listPatternInit:
-        newMatrice = Matrice(size_matrice)
-        newMatrice.initContent(pattern)
-        newListPattern.append(newMatrice)
-
-    return newListPattern
+from bibliothequePython.bib import Matrice, Pixel, Opencv, Exercice
 
 
+def testAlgo(nameExercice, resultat, nbMatriceResult):
+    opencv = Opencv(nameExercice)
+    opencv.setNumberImageResultat(nbMatriceResult)
+    opencv.getNumberImage()
+    opencv.extractImage()
+    opencv.initSizeImage()
 
+    exercice = Exercice(resultat, nameExercice)
+    listPatternInit = opencv.initExercice(opencv.sizeImage)
+    print("test")
+    print(opencv.sizeImage)
+    matrice_result = opencv.matriceResult(opencv.sizeImage)
 
-#Donnée à l'utilisateur
-size_matrice = 23
-listPatternInit = [option1, option2, option3, option4]
+    print("pattern")
+    for patern in listPatternInit:
+        print(patern)
 
-start_X = 11
-start_Y = 1
-
-
-
-def testAlgo():
     XY1 = (4, 7)
     XY2 = (18, 7)
     XY3 = (18, 15)
     XY4 = (4, 15)
 
-    listMatrice = initExercice()
-    solution_user = doExercice(XY1, XY2, XY3, XY4, listMatrice)
+    start_X = 11
+    start_Y = 1
 
-    return assertRes(solution_user, resultat)
+    solution_user = doExercice(listPatternInit , XY1, XY2, XY3, XY4, start_X, start_Y)
+    print(solution_user)
+    return exercice.assertRes(solution_user, resultat)
 
-
-def assertRes(solution_user, resultat):
-    if solution_user == resultat:
-        return "SUCCESS"
-    else:
-        return "ERROR"
 
 
 ### FIN Ajouté par l'API avant l'envoie à judge0
@@ -72,7 +54,7 @@ def assertRes(solution_user, resultat):
 ### Algo crée par l'utilisateur
 
 
-def doExercice(XY1, XY2, XY3, XY4, listMatrice):
+def doExercice(listMatrice, XY1, XY2, XY3, XY4,  start_X, start_Y):
 
     centreFigure=(11,11)
     idSolution = -1
@@ -364,6 +346,9 @@ def compatrePixel(x, y, matriceSource):
 ### FIN  Algo crée par l'utilisateur
 
 
+
 if __name__ == '__main__':
-    print("EXO 2")
-    print(testAlgo())
+    nameExercice = "comparaisonRotation"
+    resultat = 2
+    nbMatriceResult = 1
+    print(testAlgo(nameExercice, resultat, nbMatriceResult))

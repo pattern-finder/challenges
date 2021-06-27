@@ -48,7 +48,7 @@ res_tmp = []
 
 
 def testAlgo():
-    solution_user = doExercice(testInitPattern, 5)
+    solution_user = doExercice(testInitPattern, 2)
 
 
 
@@ -56,21 +56,11 @@ def trouverPixelAvecLePlusDePixelAdjacent(pixelCercle, centreCercle, segment, d)
 
     listPixelAdjMax = ((None,None),[])
 
-  #  for pixel in pixelCercle:
-    #    if testInitPattern[pixel[1]][pixel[0]] == 1:
-      #      testInitPattern[pixel[1]][pixel[0]] = 3
-     #   else:
-       #     testInitPattern[pixel[1]][pixel[0]] = 2
-
- #   print("pixelCercle")
-  #  print(pixelCercle)
     for pixel in pixelCercle:
 
 
         listPixelAdj = (pixel, trouverPixelAdjacent(pixel, segment))
 
-      #  print("listPixelAdj")
-     #   print(listPixelAdj)
 
         if len(listPixelAdj[1]) > len(listPixelAdjMax[1]):
             listPixelAdjMax = listPixelAdj
@@ -80,9 +70,6 @@ def trouverPixelAvecLePlusDePixelAdjacent(pixelCercle, centreCercle, segment, d)
     bestPixelListe = listPixelAdjMax[1]
     maxPixel = None
     maxDistance = 0
-
-  #  print("I choise this pixel list: ")
- #   print(listPixelAdjMax)
 
     if len(bestPixelListe) == 0:
         for pixel in pixelCercle:
@@ -138,8 +125,7 @@ def trouverPixelAvecLePlusDePixelAdjacentCercle(pixelsCercle, centreCercle, list
 def trouverPixelAdjacentCercle(pixel, listePixelCercle):
     x = pixel[0]
     y = pixel[1]
-   # print("x" + str(x))
-  #  print("y" + str(y))
+
 
     listPixel = []
 
@@ -157,8 +143,7 @@ def trouverPixelAdjacentCercle(pixel, listePixelCercle):
                 if (x, y + 1) in listePixelCercle:
                     listPixel.append((x, y + 1))
 
-#    print("listPixel")
-#    print(listPixel)
+
 
     return listPixel
 

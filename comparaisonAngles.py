@@ -3,64 +3,53 @@ import math
 import cv2 as cv
 import numpy
 
-from bibliothequePython.bib import Pixel, Matrice
-
-option1 = cv.imread("pattern/comparaisonAngle/option1.png")
-option2 = cv.imread("pattern/comparaisonAngle/option2.png")
-option3 = cv.imread("pattern/comparaisonAngle/option3.png")
-option4 = cv.imread("pattern/comparaisonAngle/option4.png")
-
-
-listeListePixelParImage = [
-                           [(4,2),(4,14),(19,14)],
-                           [(-1,-1),(-1,-1),(-1,-1)],
-                           [(16,2),(4,14),(19,14)],
-                           [(4, 8), (10, 14), (19, 14)],
-                           ]
-
-listPatternInit = [option1, option2, option3, option4]
-size_matrice = 23
-
-dict_resultat = {
-    0: 0.0,
-    1: None,
-    2: 0.0,
-    3: 0.0
-}
-
-resultat_valide  = {
-    0: 90.0,
-    1: None,
-    2: 45.0,
-    3: 135.0
-}
+from bibliothequePython.bib import Pixel, Matrice, Opencv, Exercice
 
 
 
-def initExercice():
-    newListPattern=[]
-
-    for pattern in listPatternInit:
-        newMatrice = Matrice(size_matrice)
-        newMatrice.initContent(pattern)
-        newListPattern.append(newMatrice)
-
-    return newListPattern
 
 
-def testAlgo():
-    listMatrice = initExercice()
-    doExercice(listMatrice)
 
-    return assertRes()
 
-def assertRes():
+def testAlgo(nameExercice, resultat, nbMatriceResult):
+    opencv = Opencv(nameExercice)
+    opencv.setNumberImageResultat(nbMatriceResult)
+    opencv.getNumberImage()
+    opencv.extractImage()
+    opencv.initSizeImage()
 
-    if resultat_valide == dict_resultat:
-        return "SUCCESS"
-    else:
-        return "ERROR"
+    exercice = Exercice(resultat, nameExercice)
+    listPatternInit = opencv.initExercice(opencv.sizeImage)
+    print("test")
+    print(opencv.sizeImage)
 
+
+    dict_resultat = {
+        0: 0.0,
+        1: None,
+        2: 0.0,
+        3: 0.0
+    }
+
+    resultat_valide = {
+        0: 90.0,
+        1: None,
+        2: 45.0,
+        3: 135.0
+    }
+
+    listeListePixelParImage = [
+        [(4, 2), (4, 14), (19, 14)],
+        [(-1, -1), (-1, -1), (-1, -1)],
+        [(16, 2), (4, 14), (19, 14)],
+        [(4, 8), (10, 14), (19, 14)],
+    ]
+
+    solution_user = doExercice(listPatternInit, listeListePixelParImage, dict_resultat, opencv.sizeImage)
+
+
+
+    return exercice.assertRes(solution_user, resultat_valide)
 
 ### FIN Ajouté par l'API avant l'envoie à judge0
 
@@ -81,7 +70,7 @@ def assertRes():
 
 
 
-def doExercice(listPattern):
+def doExercice(listPattern, listeListePixelParImage, dict_resultat, size_matrice):
 
     id = 0
     for pattern in listPattern:
@@ -99,10 +88,9 @@ def doExercice(listPattern):
 
             dict_resultat[id] = angle
             print(dict_resultat[id])
-            print(resultat_valide[id])
 
         id += 1
-
+    return dict_resultat
 
 def calculNorme(dx, dy):
     return numpy.sqrt(dx * dx + dy * dy)
@@ -327,5 +315,21 @@ def pixelIsNull(x, y, matriceSource):
 
 
 
+
+
+
 if __name__ == '__main__':
-    print(testAlgo())
+
+    nameExercice = "comparaisonAngle"
+
+    resultat = {
+        0: 90.0,
+        1: None,
+        2: 45.0,
+        3: 135.0
+    }
+
+    nbMatriceResult = 0
+    print(testAlgo(nameExercice, resultat, nbMatriceResult))
+
+
