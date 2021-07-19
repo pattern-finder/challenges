@@ -5,7 +5,7 @@ import numpy
 import math
 
 
-from bibliothequePython.bib import Matrice, Pixel, Opencv, Exercice
+from lib.bib import Matrice, Pixel, Opencv, Exercice
 
 def testAlgo(nameExercice, resultat, nbMatriceResult):
     opencv = Opencv(nameExercice)

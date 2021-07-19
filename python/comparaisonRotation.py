@@ -2,7 +2,7 @@
 
 
 from math import *
-from bibliothequePython.bib import Matrice, Pixel, Opencv, Exercice
+from lib.bib import Matrice, Pixel, Opencv, Exercice
 
 
 def testAlgo(nameExercice, resultat, nbMatriceResult):

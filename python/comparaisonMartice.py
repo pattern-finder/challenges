@@ -1,11 +1,11 @@
 
 ### Ajouté par l'API avant l'envoie à judge0
 
-from bibliothequePython import bib
+from lib import bib
 
 import cv2 as cv
 
-from bibliothequePython.bib import Matrice, Opencv, Exercice
+from lib.bib import Matrice, Opencv, Exercice
 
 
 

@@ -4,7 +4,7 @@ import cv2 as cv
 import matplotlib
 import numpy
 
-from bibliothequePython.bib import Matrice, Pixel, Opencv, Exercice
+from lib.bib import Matrice, Pixel, Opencv, Exercice
 
 def testAlgo(nameExercice, resultat, nbMatriceResult):
     opencv = Opencv(nameExercice)

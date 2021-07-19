@@ -4,11 +4,11 @@
 #include <string>
 #include <iostream>
 #include <math.h>
-#include "./bibliothequeCpp/Opencv.h"
-#include "./bibliothequeCpp/Exercice.h"
-#include "./bibliothequeCpp/Matrice.h"
-#include "./bibliothequeCpp/Line.h"
-#include "./bibliothequeCpp/Pixel.h"
+#include "./lib/Opencv.h"
+#include "./lib/Exercice.h"
+#include "./lib/Matrice.h"
+#include "./lib/Line.h"
+#include "./lib/Pixel.h"
 // g++ comparaisonMatrice.cpp -o comparaisonMatrice `pkg-config --cflags --libs opencv4`
 using namespace std;
 

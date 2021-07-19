@@ -3,7 +3,7 @@ import math
 import cv2 as cv
 import numpy
 
-from bibliothequePython.bib import Pixel, Matrice, Opencv, Exercice
+from lib.bib import Pixel, Matrice, Opencv, Exercice
 
 
 
