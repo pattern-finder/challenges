@@ -5,7 +5,7 @@
     #include <dirent.h>
     #include <sys/types.h>
     #include <filesystem>
-
+    #include <map>
 
     #include "Matrice.h"
     #include "Opencv.h"
@@ -120,6 +120,23 @@
             }
         }
 
+
+
+        std::string Exercice::assertResMultDict(const map<string, int> solution_user,const map<string, int> resultat){
+
+
+            if(solution_user.size() != resultat.size())
+                return "ERROR";
+
+            typename map<string,int>::const_iterator i, j;
+            for(i = solution_user.begin(), j = resultat.begin(); i != solution_user.end(); ++i, ++j)
+            {
+                if(*i != *j)
+                return "ERROR";
+            }
+
+            return "SUCESS";
+            }
 
 
 
@@ -237,7 +254,7 @@
                     int red = img.at<cv::Vec3b>(y,x)[0];
                     int green = img.at<cv::Vec3b>(y,x)[1];
                     int blue = img.at<cv::Vec3b>(y,x)[2];
-                    ;
+                    
                     int color[3] = {red, green, blue};
 
                     Pixel pixel = Pixel(x, y, color);
